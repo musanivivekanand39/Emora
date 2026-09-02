@@ -1,0 +1,93 @@
+<section class="view" id="settings" data-view="settings">
+          <div class="settings-grid">
+            <article class="settings-card glass profile-card">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Profile</p>
+                  <h2>Make Emora fit your routine</h2>
+                </div>
+                <button class="tiny-button" id="editProfile" type="button">Edit</button>
+              </div>
+              <div class="profile-summary">
+                <span class="profile-avatar" id="profileAvatar">B</span>
+                <div><strong id="profileNameDisplay">Bhanu</strong><small id="profileEmailDisplay">Add your email address</small><em id="memberSince">Member since August 2026</em></div>
+              </div>
+              <form class="profile-form" id="profileForm" hidden>
+                <label class="floating-field"><input id="profileAge" type="number" min="13" max="120" placeholder=" " /><span>Age</span></label>
+                <label class="floating-field"><select id="profileGender"><option value="Prefer not to say">Prefer not to say</option><option>Female</option><option>Male</option><option>Non-binary</option></select><span>Gender</span></label>
+                <label class="floating-field"><select id="profileLanguage"><option>English</option><option>Hindi</option><option>Marathi</option><option>Bengali</option><option>Tamil</option><option>Telugu</option><option>Kannada</option><option>Malayalam</option></select><span>Language</span></label>
+                <button class="primary-button ripple" type="submit">Save profile</button>
+              </form>
+              <div class="profile-facts">
+                <div><small>Age</small><strong id="profileAgeDisplay">â€”</strong></div>
+                <div><small>Gender</small><strong id="profileGenderDisplay">Prefer not to say</strong></div>
+                <div><small>Language</small><strong id="profileLanguageDisplay">English</strong></div>
+              </div>
+              <div class="goal-picker" aria-label="Wellness goals">
+                <strong>Wellness goals</strong>
+                <label><input type="checkbox" value="Reduce anxiety" />Reduce anxiety</label>
+                <label><input type="checkbox" value="Better sleep" />Better sleep</label>
+                <label><input type="checkbox" value="Daily journalling" />Daily journalling</label>
+                <label><input type="checkbox" value="Less screen time" />Less screen time</label>
+              </div>
+            </article>
+
+            <article class="settings-card glass notification-card">
+              <div class="section-title"><div><p class="eyebrow">Notifications</p><h2>Gentle reminders</h2></div></div>
+              <div class="setting-row"><div><strong>Morning mood check</strong><small>08:00</small></div><label class="switch"><input class="notification-toggle" data-reminder="morning" type="checkbox" /><span></span></label></div>
+              <div class="setting-row"><div><strong>Drink water</strong><small>Every 2 hours</small></div><label class="switch"><input class="notification-toggle" data-reminder="water" type="checkbox" /><span></span></label></div>
+              <div class="setting-row"><div><strong>Meditation reminder</strong><small>18:30</small></div><label class="switch"><input class="notification-toggle" data-reminder="meditation" type="checkbox" /><span></span></label></div>
+              <div class="setting-row"><div><strong>Sleep reminder</strong><small>22:30</small></div><label class="switch"><input class="notification-toggle" data-reminder="sleep" type="checkbox" /><span></span></label></div>
+              <div class="setting-row"><div><strong>Positive quote</strong><small>12:00</small></div><label class="switch"><input class="notification-toggle" data-reminder="quote" type="checkbox" /><span></span></label></div>
+              <button class="reports-link" type="button" id="openReports">My reports <span>â€º</span></button>
+            </article>
+
+            <article class="settings-card glass">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Preferences</p>
+                  <h2>Theme</h2>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <strong>Light theme</strong>
+                  <small>Smoothly switch to a bright, low-glare interface.</small>
+                </div>
+                <label class="switch">
+                  <input id="themeToggle" type="checkbox" />
+                  <span></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <strong>Reduced motion</strong>
+                  <small>Respect motion-sensitive sessions.</small>
+                </div>
+                <label class="switch">
+                  <input id="motionToggle" type="checkbox" />
+                  <span></span>
+                </label>
+              </div>
+            </article>
+            <article class="settings-card glass privacy-card">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Privacy</p>
+                  <h2>Your data, your control</h2>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div><strong>Friend chat analysis</strong><small>Only analyse chats you explicitly select.</small></div>
+                <span class="status-pill"><i></i> Enabled</span>
+              </div>
+              <div class="setting-row">
+                <div><strong>Voice reflections</strong><small>Use local visual feedback while recording.</small></div>
+                <span class="status-pill muted">Private</span>
+              </div>
+              <p class="privacy-copy">Your journal and chat data stay on this device until you choose to export or delete them.</p>
+              <div class="privacy-actions"><button class="secondary-button ripple" type="button" id="exportData">Export data</button><button class="danger-outline ripple" type="button" id="deleteData">Delete data</button></div>
+              <button class="logout-button" type="button" id="logoutButton">Log out</button>
+            </article>
+          </div>
+        </section>

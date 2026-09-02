@@ -1,0 +1,44 @@
+<section class="view" id="chat" data-view="chat">
+          <div class="chat-layout glass">
+            <div class="chat-panel">
+              <div class="chat-header">
+                <div>
+                  <p class="eyebrow">AI companion</p>
+                  <h2>Emora Chat</h2>
+                </div>
+                <span class="status-pill"><i></i> Online</span>
+              </div>
+
+              <div class="message-stream" id="aiMessages">
+                <article class="message ai">
+                  <p>I read your check-in. There is a lot of effort here, but also a little mental noise. Want to untangle it together?</p>
+                  <time>10:24 AM</time>
+                </article>
+                <article class="message user">
+                  <p>Yes. I feel productive, but I am also tired in a way that feels hard to name.</p>
+                  <time>10:25 AM</time>
+                </article>
+                <article class="message ai analysis">
+                  <p>Analysis: motivation is high, recovery is low. A lighter evening routine would protect tomorrow's focus.</p>
+                  <time>10:26 AM</time>
+                </article>
+                <div class="typing-indicator" aria-label="Emora is typing" hidden>
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <form class="composer glass" id="aiComposer">
+                <button class="icon-button emoji-trigger" type="button" aria-label="Choose emoji" data-icon-button="smile" data-emoji-target="aiInput"></button>
+                <label class="floating-field">
+                  <input id="aiInput" type="text" placeholder=" " autocomplete="off" />
+                  <span>Message Emora</span>
+                </label>
+                <button class="voice-button" type="button" aria-label="Record voice note">
+                  <span></span>
+                </button>
+                <button class="send-button ripple" type="submit" aria-label="Send message" data-icon-button="send"></button>
+              </form>
+            </div>
+
+          </div>
+        </section>

@@ -1,0 +1,104 @@
+<section class="view" id="check" data-view="check">
+          <div class="check-shell glass">
+            <div class="check-panel active" id="checkHome">
+              <div class="check-hero">
+                <div>
+                  <p class="eyebrow">Doctor-style reports</p>
+                  <h2>Mental health check</h2>
+                  <p>Short screenings and rotating wellness questions help you notice patterns before sharing a clear report with a professional.</p>
+                </div>
+                <span class="status-pill" id="nextSuggestion"><i></i> Ready</span>
+              </div>
+
+              <div class="screening-grid">
+                <button class="screening-card" type="button" data-start-screening="phq9">
+                  <span class="screening-icon purple" data-inline-icon="heart-pulse"></span>
+                  <strong>PHQ-9</strong>
+                  <small>Depression screening - 9 questions - about 3 min</small>
+                </button>
+                <button class="screening-card" type="button" data-start-screening="gad7">
+                  <span class="screening-icon teal" data-inline-icon="activity"></span>
+                  <strong>GAD-7</strong>
+                  <small>Anxiety screening - 7 questions - about 2 min</small>
+                </button>
+                <button class="screening-card" type="button" data-start-screening="daily">
+                  <span class="screening-icon orange" data-inline-icon="sparkles"></span>
+                  <strong>Rotating check-in</strong>
+                  <small>Fresh questions selected from what you have not answered recently</small>
+                </button>
+              </div>
+
+              <div class="report-grid">
+                <article class="doctor-note">
+                  <h3>Helpful for appointments</h3>
+                  <p>Reports include scores, symptom themes, strongest signals, date completed, and a clear note that this is a screening, not a diagnosis.</p>
+                </article>
+                <article class="history-card">
+                  <div class="section-title">
+                    <div>
+                      <p class="eyebrow">Saved locally</p>
+                      <h3>Recent reports</h3>
+                    </div>
+                    <button class="tiny-button" type="button" id="clearReports">Clear</button>
+                  </div>
+                  <div class="history-list" id="reportHistory"></div>
+                </article>
+              </div>
+            </div>
+
+            <div class="check-panel" id="screeningFlow">
+              <div class="screening-top">
+                <button class="icon-button" type="button" aria-label="Back to checks" id="exitScreening" data-icon-button="arrow-left"></button>
+                <div>
+                  <h2 id="screeningTitle">PHQ-9</h2>
+                  <p id="screeningMeta">Question 1 of 9</p>
+                </div>
+              </div>
+              <div class="progress-track"><span id="screeningProgress"></span></div>
+              <article class="question-card">
+                <p class="question-context" id="questionContext">Over the last 2 weeks, how often have you been bothered by...</p>
+                <h3 id="questionText">Little interest or pleasure in doing things</h3>
+                <div class="answer-list" id="answerList"></div>
+              </article>
+              <div class="screening-actions">
+                <button class="secondary-button ripple" type="button" id="previousQuestion">Previous</button>
+                <button class="primary-button ripple" type="button" id="nextQuestion">Next</button>
+              </div>
+            </div>
+
+            <div class="check-panel" id="screeningResult">
+              <div class="result-head">
+                <div>
+                  <p class="eyebrow" id="resultType">PHQ-9 screening</p>
+                  <h2>Your result</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Back to checks" id="closeResult" data-icon-button="x"></button>
+              </div>
+              <div class="result-grid">
+                <article class="score-card">
+                  <small>Total score</small>
+                  <strong id="resultScore">0/27</strong>
+                  <span id="resultRange">Minimal range</span>
+                </article>
+                <article class="explanation-card">
+                  <h3>AI explanation</h3>
+                  <p id="resultExplanation">Your answers suggest a low current symptom load.</p>
+                </article>
+                <article class="doctor-report">
+                  <div class="section-title">
+                    <div>
+                      <p class="eyebrow">For your doctor</p>
+                      <h3>Report summary</h3>
+                    </div>
+                    <button class="tiny-button" type="button" id="copyReport">Copy</button>
+                  </div>
+                  <pre id="doctorReportText"></pre>
+                </article>
+              </div>
+              <div class="result-actions">
+                <button class="secondary-button ripple" type="button" id="takeAnother">Take another</button>
+                <button class="primary-button ripple" type="button" data-view-link="chat">Discuss with Emora</button>
+              </div>
+            </div>
+          </div>
+        </section>

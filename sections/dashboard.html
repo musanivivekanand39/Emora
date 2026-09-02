@@ -1,0 +1,88 @@
+<section class="view active" id="dashboard" data-view="dashboard">
+          <div class="dashboard-grid">
+            <article class="welcome-card glass gradient-border">
+              <div>
+                <p class="eyebrow">AI wellness summary</p>
+                <h2>Your emotional rhythm is calmer than last week.</h2>
+                <p>Emora noticed fewer late-night stress spikes and more consistent recovery after focused work blocks.</p>
+                <div class="welcome-actions">
+                  <button class="primary-button ripple" type="button">Start reflection</button>
+                  <button class="secondary-button ripple" type="button">View insights</button>
+                </div>
+              </div>
+              <div class="wellness-illustration" aria-label="Calm wellness illustration" role="img">
+                <div class="moon"></div>
+                <div class="pulse-card">
+                  <span></span>
+                  <strong>82</strong>
+                  <small>Mood score</small>
+                </div>
+                <div class="leaf left"></div>
+                <div class="leaf right"></div>
+              </div>
+            </article>
+
+            <article class="stat-card glass">
+              <div class="card-head">
+                <span class="icon-chip teal" data-inline-icon="sparkles"></span>
+                <small>AI summary</small>
+              </div>
+              <h3>Balanced</h3>
+              <p>Most messages indicate grounded optimism with mild afternoon fatigue.</p>
+            </article>
+
+            <article class="stat-card glass">
+              <div class="card-head">
+                <span class="icon-chip purple" data-inline-icon="heart-pulse"></span>
+                <small>Mood score</small>
+              </div>
+              <div class="score-ring" style="--score: 82">
+                <strong>82</strong>
+              </div>
+              <p>+12% from your previous weekly average.</p>
+            </article>
+
+            <article class="chart-card glass weekly-card">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Weekly progress</p>
+                  <h3>Emotion balance</h3>
+                </div>
+                <span class="trend-pill">+18%</span>
+              </div>
+              <canvas id="weeklyChart" width="700" height="280" aria-label="Weekly emotional progress chart"></canvas>
+            </article>
+
+            <article class="chart-card glass">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Energy</p>
+                  <h3>Daily flow</h3>
+                </div>
+                <button class="tiny-button" type="button">Week</button>
+              </div>
+              <canvas id="energyChart" width="420" height="280" aria-label="Daily energy chart"></canvas>
+            </article>
+
+            <article class="insight-list glass">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Analytics</p>
+                  <h3>Signals to notice</h3>
+                </div>
+              </div>
+              <div class="insight-row">
+                <span class="dot teal"></span>
+                <div><strong>Recovery improved</strong><small>Short walks after study sessions helped.</small></div>
+              </div>
+              <div class="insight-row">
+                <span class="dot orange"></span>
+                <div><strong>Pressure window</strong><small>Stress peaks between 3 PM and 5 PM.</small></div>
+              </div>
+              <div class="insight-row">
+                <span class="dot pink"></span>
+                <div><strong>Social lift</strong><small>Friend chats raised mood by 9 points.</small></div>
+              </div>
+            </article>
+          </div>
+        </section>

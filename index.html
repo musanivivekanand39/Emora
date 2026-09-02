@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emora Premium Wellness UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section class="auth-screen" id="authScreen" aria-labelledby="authTitle">
+      <div class="auth-card glass">
+        <div class="auth-brand"><img src="assets/emora-logo.png" alt="Emora" /><img src="assets/emora-wordmark.png" alt="Emora" /></div>
+        <p class="eyebrow">Your private wellness space</p>
+        <h1 id="authTitle">Welcome to Emora</h1>
+        <div class="auth-tabs" role="tablist"><button class="active" type="button" data-auth-tab="login">Log in</button><button type="button" data-auth-tab="signup">Create account</button></div>
+        <form class="auth-form" id="loginForm" autocomplete="off">
+          <label><span>Email address</span><input name="email" type="email" autocomplete="off" required /></label>
+          <label><span>Password</span><input name="password" type="password" autocomplete="new-password" required /></label>
+          <button class="primary-button ripple" type="submit">Log in</button>
+        </form>
+        <form class="auth-form" id="signupForm" hidden>
+          <label><span>Name</span><input name="name" type="text" autocomplete="name" required /></label>
+          <label><span>Email address</span><input name="email" type="email" autocomplete="email" required /></label>
+          <label><span>Password</span><input name="password" type="password" minlength="6" autocomplete="new-password" required /></label>
+          <button class="primary-button ripple" type="submit">Create account</button>
+        </form>
+        <p class="auth-status" id="authStatus" role="status"></p>
+      </div>
+    </section>
+    <div class="app-shell">
+      <aside class="sidebar glass">
+        <a class="brand" href="#dashboard" aria-label="Emora dashboard">
+          <img class="brand-mark" src="assets/emora-logo.png" alt="Emora" />
+          <span class="brand-copy">
+            <img class="brand-wordmark" src="assets/emora-wordmark.png" alt="Emora" />
+            <small>Mindful AI</small>
+          </span>
+        </a>
+
+        <nav class="nav-list" aria-label="Main navigation">
+          <a class="nav-item active" href="#dashboard" data-view-link="dashboard" data-icon="layout-dashboard"><span>Dashboard</span></a>
+          <a class="nav-item" href="#chat" data-view-link="chat" data-icon="bot"><span>AI Chat</span></a>
+          <a class="nav-item" href="#check" data-view-link="check" data-icon="clipboard-check"><span>Health Check</span></a>
+          <a class="nav-item" href="#relax" data-view-link="relax" data-icon="wind"><span>Relax</span></a>
+          <a class="nav-item" href="#emergency" data-view-link="emergency" data-icon="phone-call"><span>Emergency</span></a>
+          <a class="nav-item" href="#friends" data-view-link="friends" data-icon="messages-square"><span>Friend Chat</span></a>
+          <a class="nav-item" href="#analytics" data-view-link="analytics" data-icon="line-chart"><span>Analytics</span></a>
+          <a class="nav-item" href="#settings" data-view-link="settings" data-icon="settings"><span>Settings</span></a>
+        </nav>
+
+        <div class="sidebar-card">
+          <div class="mini-signal" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p id="dailyMessage">Your journey starts today.</p>
+          <strong id="streakCount">Day 1</strong>
+        </div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar glass">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="mobileNavigation" aria-expanded="false" data-icon-button="menu"></button>
+          <div>
+            <p class="eyebrow" id="currentDate">Loading date…</p>
+            <h1 id="welcomeTitle">Welcome to Emora</h1>
+          </div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" aria-label="Search" data-icon-button="search"></button>
+            <button class="icon-button" type="button" aria-label="Notifications" data-icon-button="bell"></button>
+            <button class="profile-button" type="button">
+              <span id="profileInitials">E</span>
+              <strong>Pro</strong>
+            </button>
+          </div>
+        </header>
+
+        <div id="sectionMount" aria-live="polite"></div>
+      </main>
+
+      <nav class="mobile-nav glass" id="mobileNavigation" aria-label="Mobile navigation">
+        <a class="active" href="#dashboard" data-view-link="dashboard" aria-label="Dashboard" data-mobile-icon="layout-dashboard"></a>
+        <a href="#chat" data-view-link="chat" aria-label="AI Chat" data-mobile-icon="bot"></a>
+        <a href="#check" data-view-link="check" aria-label="Health Check" data-mobile-icon="clipboard-check"></a>
+        <a href="#relax" data-view-link="relax" aria-label="Relax" data-mobile-icon="wind"></a>
+        <a href="#emergency" data-view-link="emergency" aria-label="Emergency" data-mobile-icon="phone-call"></a>
+        <a href="#friends" data-view-link="friends" aria-label="Friends" data-mobile-icon="messages-square"></a>
+        <a href="#analytics" data-view-link="analytics" aria-label="Analytics" data-mobile-icon="line-chart"></a>
+        <a href="#settings" data-view-link="settings" aria-label="Settings" data-mobile-icon="settings"></a>
+      </nav>
+
+      <a class="fab ripple" href="#chat" data-view-link="chat" aria-label="Open AI chat" data-icon-button="message-circle"></a>
+      <div class="emoji-popover glass" id="emojiPopover" aria-label="Emoji picker">
+        <button type="button">🙂</button>
+        <button type="button">💜</button>
+        <button type="button">✨</button>
+        <button type="button">🌿</button>
+        <button type="button">🫶</button>
+        <button type="button">🔥</button>
+      </div>
+    </div>
+
+
+    <script type="module" src="auth.js"></script>
+    <script>
+      const sectionFiles = ["dashboard", "chat", "check", "relax", "friends", "emergency", "analytics", "settings"];
+      Promise.all(sectionFiles.map((name) => fetch(`sections/${name}.html`).then((response) => {
+        if (!response.ok) throw new Error(`Unable to load ${name}`);
+        return response.text();
+      }))).then((sections) => {
+        document.querySelector("#sectionMount").innerHTML = sections.join("\n");
+        const script = document.createElement("script");
+        script.src = "app.js";
+        document.body.append(script);
+      }).catch((error) => {
+        document.querySelector("#sectionMount").innerHTML = "<p class=\"load-error\">Unable to load the application sections. Please run this project through a local web server.</p>";
+        console.error(error);
+      });
+    </script>
+  </body>
+</html>

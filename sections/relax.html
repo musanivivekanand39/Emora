@@ -1,0 +1,107 @@
+<section class="view" id="relax" data-view="relax">
+          <div class="relax-layout">
+            <div class="relax-main">
+              <div class="relax-heading">
+                <div>
+                  <p class="eyebrow">Personalised resets</p>
+                  <h2>Relax & Wellness</h2>
+                  <p>Small practices recommended from your latest sentiment, chat tone, and screening signals.</p>
+                </div>
+                <span class="status-pill" id="sentimentBadge"><i></i> Balanced</span>
+              </div>
+
+              <article class="breathing-card glass gradient-border">
+                <div>
+                  <h3>Breathing exercise</h3>
+                  <p id="breathingPattern">Standard calming breath: in for 4, out for 6.</p>
+                </div>
+                <button class="secondary-button ripple" type="button" id="breathingStart">Start</button>
+                <div class="breath-circle" id="breathCircle">
+                  <span>Ready</span>
+                </div>
+              </article>
+
+              <article class="meditation-card glass">
+                <div class="section-title">
+                  <div>
+                    <h3>Meditation timer</h3>
+                    <p>Sit, soften your jaw, let it run.</p>
+                  </div>
+                  <strong id="meditationTime">05:00</strong>
+                </div>
+                <div class="timer-options">
+                  <button class="selected" type="button" data-minutes="5">5 min</button>
+                  <button type="button" data-minutes="10">10 min</button>
+                  <button type="button" data-minutes="15">15 min</button>
+                  <button type="button" data-minutes="20">20 min</button>
+                </div>
+                <div class="custom-timer">
+                  <label for="customMinutes">Custom time</label>
+                  <input id="customMinutes" type="number" min="1" max="120" value="5" inputmode="numeric" />
+                  <span>minutes</span>
+                  <button class="secondary-button ripple" type="button" id="setCustomTimer">Set</button>
+                </div>
+                <div class="timer-actions">
+                  <button class="primary-button ripple" type="button" id="meditationStart">Start</button>
+                  <button class="icon-button" type="button" aria-label="Reset meditation timer" id="meditationReset" data-icon-button="rotate-ccw"></button>
+                </div>
+              </article>
+
+              <article class="recommendation-card glass">
+                <div class="section-title">
+                  <div>
+                    <h3>Recommended for you</h3>
+                    <p id="recommendationReason">Based on today's sentiment signals</p>
+                  </div>
+                </div>
+                <div class="sentiment-tabs" id="sentimentTabs" aria-label="Choose sentiment">
+                  <button class="active" type="button" data-sentiment="balanced">Balanced</button>
+                  <button type="button" data-sentiment="stressed">Stressed</button>
+                  <button type="button" data-sentiment="anxious">Anxious</button>
+                  <button type="button" data-sentiment="sad">Low mood</button>
+                  <button type="button" data-sentiment="tired">Tired</button>
+                </div>
+                <div class="recommendation-list" id="relaxRecommendations"></div>
+              </article>
+            </div>
+
+            <aside class="relax-side">
+              <article class="sounds-card glass">
+                <div class="section-title">
+                  <div>
+                    <p class="eyebrow">Audio</p>
+                    <h3>Sounds & music</h3>
+                  </div>
+                </div>
+                <div class="sound-list" id="soundList"></div>
+              </article>
+
+              <article class="yoga-card glass">
+                <div class="section-title">
+                  <div>
+                    <p class="eyebrow">Movement</p>
+                    <h3>Yoga sessions</h3>
+                  </div>
+                </div>
+                <div class="yoga-grid" id="yogaList"></div>
+              </article>
+
+              <article class="quote-card glass">
+                <div class="quote-art" aria-hidden="true"></div>
+                <div>
+                  <p class="eyebrow">Motivational quote</p>
+                  <blockquote>Almost everything will work again if you unplug it for a few minutes, including you.</blockquote>
+                  <cite>- Anne Lamott</cite>
+                </div>
+              </article>
+
+              <article class="gratitude-card glass">
+                <h3>Gratitude journal</h3>
+                <p>Three small good things from today.</p>
+                <textarea id="gratitudeText" rows="5" placeholder="1. ..."></textarea>
+                <button class="primary-button ripple" type="button" id="saveGratitude">Save entry</button>
+                <small id="gratitudeStatus">Saved only on this device.</small>
+              </article>
+            </aside>
+          </div>
+        </section>
