@@ -2608,6 +2608,7 @@ canvas {
     grid-column: 2;
     grid-row: 1;
     min-width: 0;
+    margin-left: 4px;
   }
 
   .top-actions {
