@@ -10,4 +10,4 @@ export const firebaseConfig = {
 };
 
 // Same-origin Vercel Serverless Function; no private key is exposed to the browser.
-export const authApiUrl = "/api/auth";
+export const authApiUrl = "/api";
