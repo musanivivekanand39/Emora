@@ -138,6 +138,8 @@ body.auth-ready:not(.authenticated) .auth-screen { visibility: visible; }
 .auth-form input { width: 100%; min-height: 50px; padding: 0 14px; border: 1px solid var(--border); border-radius: 13px; outline: 0; background: var(--surface-2); color: var(--text); }
 .auth-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.16); }
 .auth-form .primary-button { width: 100%; min-height: 50px; margin-top: 4px; }
+.auth-link { justify-self: center; padding: 2px; border: 0; background: transparent; color: var(--primary-2); cursor: pointer; font: inherit; font-size: 0.82rem; }
+.auth-link:hover { color: var(--text); text-decoration: underline; }
 .auth-status { min-height: 1.4em; margin: 18px 0 0; text-align: center; color: var(--teal); font-size: 0.8rem; }
 .auth-status.error { color: #fda4af; }
 

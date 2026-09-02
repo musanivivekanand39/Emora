@@ -1,11 +1,12 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
-import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
 const authStatus = document.querySelector("#authStatus");
 const loginForm = document.querySelector("#loginForm");
 const signupForm = document.querySelector("#signupForm");
+const forgotPasswordButton = document.querySelector("#forgotPasswordButton");
 let creatingAccount = false;
 const showStatus = (message, error = false) => { authStatus.textContent = message; authStatus.classList.toggle("error", error); };
 function selectAuthTab(tab) {
@@ -85,6 +86,16 @@ if (!isFirebaseConfigured) {
       const credential = await signInWithEmailAndPassword(auth, form.get("email"), form.get("password"));
       await showApp(credential.user);
     } catch (_error) { showStatus(loginError, true); }
+  });
+  forgotPasswordButton?.addEventListener("click", async () => {
+    const email = String(new FormData(loginForm).get("email") || "").trim();
+    if (!email) return showStatus("Enter your email address first.", true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showStatus("If that email is registered, you'll receive a reset link.");
+    } catch (_error) {
+      showStatus("If that email is registered, you'll receive a reset link.");
+    }
   });
   signupForm.addEventListener("submit", async (event) => {
     event.preventDefault(); const form = new FormData(signupForm);
