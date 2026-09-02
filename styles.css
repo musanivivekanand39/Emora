@@ -2341,6 +2341,10 @@ canvas {
 }
 
 @media (max-width: 860px) {
+  body.authenticated .app-shell {
+    display: block;
+  }
+
   .app-shell {
     display: block;
     padding: 12px 12px 96px;
