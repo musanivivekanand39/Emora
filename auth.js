@@ -1,6 +1,5 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
-import { authApiUrl } from "./firebase-config.js";
-import { browserSessionPersistence, onAuthStateChanged, setPersistence, signInWithCustomToken, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
@@ -65,12 +64,6 @@ async function showApp(user) {
 }
 const loginError = "Incorrect email or password";
 const signupError = "Unable to create account. Please try again.";
-async function authRequest(path, body) {
-  const response = await fetch(`${authApiUrl}${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || "Something went wrong. Please try again.");
-  return data;
-}
 async function saveUserData(user, data) { if (db && user) await setDoc(doc(db, "users", user.uid), { ...data, updatedAt: serverTimestamp() }, { merge: true }); }
 
 document.querySelectorAll("[data-auth-tab]").forEach((button) => button.addEventListener("click", () => { selectAuthTab(button.dataset.authTab); showStatus(""); }));
@@ -89,8 +82,7 @@ if (!isFirebaseConfigured) {
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault(); const form = new FormData(loginForm);
     try {
-      const result = await authRequest("/login", { email: form.get("email"), password: form.get("password") });
-      const credential = await signInWithCustomToken(auth, result.token);
+      const credential = await signInWithEmailAndPassword(auth, form.get("email"), form.get("password"));
       await showApp(credential.user);
     } catch (_error) { showStatus(loginError, true); }
   });
@@ -98,7 +90,12 @@ if (!isFirebaseConfigured) {
     event.preventDefault(); const form = new FormData(signupForm);
     try {
       creatingAccount = true;
-      await authRequest("/signup", { email: form.get("email"), password: form.get("password"), username: form.get("username"), displayName: form.get("displayName") });
+      const username = String(form.get("username") || "").trim();
+      const displayName = String(form.get("displayName") || "").trim();
+      const credential = await createUserWithEmailAndPassword(auth, form.get("email"), form.get("password"));
+      await updateProfile(credential.user, { displayName });
+      await saveUserData(credential.user, { name: displayName, username, email: credential.user.email, createdAt: serverTimestamp() });
+      await signOut(auth);
       creatingAccount = false;
       selectAuthTab("login");
       signupForm.reset();
