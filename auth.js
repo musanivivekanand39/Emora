@@ -1,5 +1,5 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
-import { createUserWithEmailAndPassword, inMemoryPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { browserLocalPersistence, createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
@@ -70,8 +70,7 @@ document.querySelectorAll("[data-auth-tab]").forEach((button) => button.addEvent
 if (!isFirebaseConfigured) {
   showStatus("Add your Firebase web configuration in firebase-config.js to enable accounts.", true);
 } else {
-  await setPersistence(auth, inMemoryPersistence);
-  await signOut(auth);
+  await setPersistence(auth, browserLocalPersistence);
   onAuthStateChanged(auth, async (user) => {
     if (creatingAccount) return;
     await showApp(user);
