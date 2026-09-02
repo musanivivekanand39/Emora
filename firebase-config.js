@@ -9,5 +9,5 @@ export const firebaseConfig = {
   measurementId: "G-N7VFMNLHLS"
 };
 
-// The server-side auth API URL. Set this to your deployed API URL before production.
-export const authApiUrl = "http://localhost:3000/auth";
+// Same-origin Vercel Serverless Function; no private key is exposed to the browser.
+export const authApiUrl = "/api/auth";
