@@ -22,9 +22,10 @@
           <button class="primary-button ripple" type="submit">Log in</button>
         </form>
         <form class="auth-form" id="signupForm" hidden>
-          <label><span>Name</span><input name="name" type="text" autocomplete="name" required /></label>
+          <label><span>Username</span><input name="username" type="text" autocomplete="username" required /></label>
+          <label><span>Display name</span><input name="displayName" type="text" autocomplete="name" required /></label>
           <label><span>Email address</span><input name="email" type="email" autocomplete="email" required /></label>
-          <label><span>Password</span><input name="password" type="password" minlength="6" autocomplete="new-password" required /></label>
+          <label><span>Password</span><input name="password" type="password" minlength="12" autocomplete="new-password" required /></label>
           <button class="primary-button ripple" type="submit">Create account</button>
         </form>
         <p class="auth-status" id="authStatus" role="status"></p>

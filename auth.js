@@ -1,5 +1,6 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
-import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { authApiUrl } from "./firebase-config.js";
+import { browserSessionPersistence, onAuthStateChanged, setPersistence, signInWithCustomToken, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
@@ -62,7 +63,14 @@ async function showApp(user) {
   window.location.hash = "dashboard";
   window.emoraSetView?.("dashboard");
 }
-const friendlyError = (error) => ({ "auth/email-already-in-use": "An account with this email already exists.", "auth/invalid-credential": "Incorrect email or password.", "auth/weak-password": "Use a password with at least 6 characters.", "auth/invalid-email": "Enter a valid email address." }[error.code] || "Something went wrong. Please try again.");
+const loginError = "Incorrect email or password";
+const signupError = "Unable to create account. Please try again.";
+async function authRequest(path, body) {
+  const response = await fetch(`${authApiUrl}${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || "Something went wrong. Please try again.");
+  return data;
+}
 async function saveUserData(user, data) { if (db && user) await setDoc(doc(db, "users", user.uid), { ...data, updatedAt: serverTimestamp() }, { merge: true }); }
 
 document.querySelectorAll("[data-auth-tab]").forEach((button) => button.addEventListener("click", () => { selectAuthTab(button.dataset.authTab); showStatus(""); }));
@@ -81,25 +89,23 @@ if (!isFirebaseConfigured) {
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault(); const form = new FormData(loginForm);
     try {
-      const credential = await signInWithEmailAndPassword(auth, form.get("email"), form.get("password"));
+      const result = await authRequest("/login", { email: form.get("email"), password: form.get("password") });
+      const credential = await signInWithCustomToken(auth, result.token);
       await showApp(credential.user);
-    } catch (error) { showStatus(friendlyError(error), true); }
+    } catch (_error) { showStatus(loginError, true); }
   });
   signupForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); const form = new FormData(signupForm); const name = form.get("name").trim();
+    event.preventDefault(); const form = new FormData(signupForm);
     try {
       creatingAccount = true;
-      const credential = await createUserWithEmailAndPassword(auth, form.get("email"), form.get("password"));
-      await updateProfile(credential.user, { displayName: name });
-      await saveUserData(credential.user, { name, email: credential.user.email, createdAt: serverTimestamp() });
-      await signOut(auth);
+      await authRequest("/signup", { email: form.get("email"), password: form.get("password"), username: form.get("username"), displayName: form.get("displayName") });
       creatingAccount = false;
       selectAuthTab("login");
       signupForm.reset();
       showStatus("Account created. Please log in.");
-    } catch (error) {
+    } catch (_error) {
       creatingAccount = false;
-      showStatus(friendlyError(error), true);
+      showStatus(signupError, true);
     }
   });
 }

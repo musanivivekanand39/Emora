@@ -8,3 +8,6 @@ export const firebaseConfig = {
   appId: "1:253962138990:web:27dd191de86ab04d3f3d7f",
   measurementId: "G-N7VFMNLHLS"
 };
+
+// The server-side auth API URL. Set this to your deployed API URL before production.
+export const authApiUrl = "http://localhost:3000/auth";

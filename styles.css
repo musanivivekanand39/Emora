@@ -141,6 +141,26 @@ body.auth-ready:not(.authenticated) .auth-screen { visibility: visible; }
 .auth-status { min-height: 1.4em; margin: 18px 0 0; text-align: center; color: var(--teal); font-size: 0.8rem; }
 .auth-status.error { color: #fda4af; }
 
+/* The registration form has two extra fields, so it uses a compact layout without
+   changing the more spacious login view. */
+.auth-card:has(#signupForm:not([hidden])) { padding: 24px 30px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-brand { margin-bottom: 18px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-brand img:first-child { width: 44px; height: 44px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-brand img:last-child { width: 116px; height: 33px; }
+.auth-card:has(#signupForm:not([hidden])) h1 { margin: 5px 0 17px; font-size: 1.45rem; }
+.auth-card:has(#signupForm:not([hidden])) .auth-tabs { margin-bottom: 16px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-tabs button { padding: 9px 8px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-form { gap: 10px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-form label { gap: 5px; font-size: 0.78rem; }
+.auth-card:has(#signupForm:not([hidden])) .auth-form input,
+.auth-card:has(#signupForm:not([hidden])) .auth-form .primary-button { min-height: 44px; }
+.auth-card:has(#signupForm:not([hidden])) .auth-status { margin-top: 10px; }
+
+@media (max-height: 760px) {
+  .auth-screen { padding: 12px; align-items: start; }
+  .auth-card:has(#signupForm:not([hidden])) { margin: 12px 0; }
+}
+
 body::before {
   position: fixed;
   inset: 0;
