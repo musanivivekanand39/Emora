@@ -291,8 +291,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 76px;
-  padding: 14px 18px;
+  min-height: 68px;
+  padding: 11px 16px;
   border-radius: var(--radius-lg);
 }
 
@@ -320,8 +320,11 @@ h1 {
 
 .topbar h1 span {
   color: var(--primary-2);
-  font-size: 0.78em;
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.58em;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 h2 {
@@ -2530,8 +2533,12 @@ canvas {
 
   .topbar h1 {
     max-width: none;
-    font-size: clamp(1.2rem, 5.4vw, 1.5rem);
+    font-size: clamp(1.08rem, 4.8vw, 1.32rem);
     overflow-wrap: anywhere;
+  }
+
+  .topbar h1 span {
+    font-size: 0.68em;
   }
 
   .topbar .eyebrow {
