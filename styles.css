@@ -291,8 +291,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 88px;
-  padding: 18px 22px;
+  min-height: 76px;
+  padding: 14px 18px;
   border-radius: var(--radius-lg);
 }
 
@@ -320,6 +320,8 @@ h1 {
 
 .topbar h1 span {
   color: var(--primary-2);
+  font-size: 0.78em;
+  font-weight: 600;
 }
 
 h2 {
@@ -341,7 +343,7 @@ p {
 .top-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .icon-button,
@@ -361,9 +363,9 @@ p {
 .icon-button,
 .send-button,
 .voice-button {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
 }
 
 .icon-button:hover,
@@ -377,9 +379,9 @@ p {
 .profile-button {
   display: flex;
   align-items: center;
-  gap: 9px;
-  height: 44px;
-  padding: 4px 12px 4px 5px;
+  gap: 7px;
+  height: 40px;
+  padding: 3px 10px 3px 4px;
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--text);
@@ -388,8 +390,8 @@ p {
 
 .profile-button span {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   place-items: center;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--primary), var(--teal));
@@ -2510,9 +2512,9 @@ canvas {
 
   .topbar {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
     align-items: center;
-    padding: 14px 16px 16px;
+    padding: 12px 14px 14px;
     gap: 10px;
   }
 
@@ -2528,7 +2530,7 @@ canvas {
 
   .topbar h1 {
     max-width: none;
-    font-size: clamp(1.35rem, 6vw, 1.7rem);
+    font-size: clamp(1.2rem, 5.4vw, 1.5rem);
     overflow-wrap: anywhere;
   }
 
