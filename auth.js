@@ -18,7 +18,11 @@ function updateUserUi(user) {
   const name = user.displayName || "Member";
   const initials = name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   const welcome = document.querySelector("#welcomeTitle");
-  if (welcome) welcome.textContent = `Welcome back, ${name}`;
+  if (welcome) {
+    const nameLine = document.createElement("span");
+    nameLine.textContent = name;
+    welcome.replaceChildren("Welcome", document.createElement("br"), nameLine);
+  }
   const avatar = document.querySelector("#profileInitials");
   if (avatar) avatar.textContent = initials;
   const profileAvatar = document.querySelector("#profileAvatar");
