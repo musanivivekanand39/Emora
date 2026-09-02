@@ -1,5 +1,5 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
-import { browserLocalPersistence, createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
@@ -68,12 +68,14 @@ async function saveUserData(user, data) { if (db && user) await setDoc(doc(db, "
 document.querySelectorAll("[data-auth-tab]").forEach((button) => button.addEventListener("click", () => { selectAuthTab(button.dataset.authTab); showStatus(""); }));
 
 if (!isFirebaseConfigured) {
+  document.body.classList.add("auth-ready");
   showStatus("Add your Firebase web configuration in firebase-config.js to enable accounts.", true);
 } else {
-  await setPersistence(auth, browserLocalPersistence);
+  await setPersistence(auth, browserSessionPersistence);
   onAuthStateChanged(auth, async (user) => {
     if (creatingAccount) return;
     await showApp(user);
+    document.body.classList.add("auth-ready");
     if (user) showStatus("");
   });
   loginForm.addEventListener("submit", async (event) => {
