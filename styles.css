@@ -1040,6 +1040,18 @@ canvas {
   transform: translateY(-10px);
 }
 
+.composer-disabled { cursor: not-allowed; }
+.composer-disabled .floating-field input {
+  cursor: not-allowed;
+  color: var(--muted);
+  background: rgba(15, 23, 42, 0.22);
+}
+.composer-disabled .floating-field span {
+  color: var(--primary-2);
+  font-size: 0.72rem;
+  transform: translateY(-10px);
+}
+
 .voice-button span {
   width: 14px;
   height: 22px;

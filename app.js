@@ -1014,7 +1014,7 @@ const observer = new IntersectionObserver((entries) => {
 });
 counters.forEach((counter) => observer.observe(counter));
 
-document.querySelector("#aiComposer").addEventListener("submit", (event) => {
+document.querySelector("#aiComposer")?.addEventListener("submit", (event) => {
   event.preventDefault();
   const input = document.querySelector("#aiInput");
   const text = input.value.trim();
