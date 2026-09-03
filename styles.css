@@ -1714,6 +1714,22 @@ canvas {
   color: white;
 }
 
+.section-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+
+.section-view-all b {
+  color: var(--text);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 0.8;
+}
+
 .yoga-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2682,4 +2698,97 @@ canvas {
   .play-dot {
     display: none;
   }
+
+  /* Relax recommendations mirror the compact card layout on small screens. */
+  .recommendation-card,
+  .sounds-card,
+  .yoga-card { padding: 14px; }
+
+  .recommendation-card .section-title h3,
+  .sounds-card .section-title h3,
+  .yoga-card .section-title h3 { font-size: 1rem; }
+
+  .sentiment-tabs {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin: 12px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .sentiment-tabs::-webkit-scrollbar { display: none; }
+  .sentiment-tabs button { flex: 0 0 auto; min-height: 30px; padding: 0 13px; font-size: 0.72rem; }
+
+  .recommendation-list,
+  .sound-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .recommendation-list::-webkit-scrollbar,
+  .sound-list::-webkit-scrollbar { display: none; }
+
+  .recommendation-list .relax-item {
+    display: flex;
+    flex: 0 0 116px;
+    min-height: 178px;
+    padding: 11px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 14px;
+    scroll-snap-align: start;
+  }
+
+  .recommendation-list .relax-item span:first-child { width: 42px; height: 42px; border-radius: 50%; }
+  .recommendation-list .relax-item strong { font-size: 0.76rem; line-height: 1.2; }
+  .recommendation-list .relax-item small { font-size: 0.7rem; line-height: 1.3; }
+  .recommendation-list .relax-item .trend-pill { margin-top: auto; align-self: center; font-size: 0.7rem; }
+
+  .sound-list .sound-item {
+    display: grid;
+    flex: 0 0 154px;
+    min-height: 92px;
+    padding: 10px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 8px;
+    border-radius: 13px;
+    scroll-snap-align: start;
+  }
+
+  .sound-list .sound-item span:first-child { width: 38px; height: 38px; border-radius: 50%; }
+  .sound-list .sound-item strong { font-size: 0.76rem; }
+  .sound-list .sound-item small { font-size: 0.7rem; line-height: 1.25; }
+  .sound-list .sound-play { grid-column: 1; width: 34px; height: 34px; }
+
+  .yoga-grid {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .yoga-grid::-webkit-scrollbar { display: none; }
+  .yoga-tile {
+    display: grid;
+    flex: 0 0 160px;
+    min-height: 68px;
+    padding: 10px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    gap: 8px;
+    border-radius: 13px;
+    text-align: left;
+  }
+
+  .yoga-tile span { width: 38px; height: 38px; border-radius: 50%; }
+  .yoga-tile strong { font-size: 0.76rem; }
+  .yoga-tile small { font-size: 0.7rem; }
 }

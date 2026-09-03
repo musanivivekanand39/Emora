@@ -602,7 +602,7 @@ function renderRelaxRecommendations(sentiment = inferRelaxSentiment()) {
     <div class="relax-item">
       <span>${svg(icon)}</span>
       <div><strong>${title}</strong><small>${detail}</small></div>
-      <span class="trend-pill">Now</span>
+      <span class="trend-pill">New</span>
     </div>
   `).join("");
 
