@@ -2704,6 +2704,19 @@ canvas {
   .sounds-card,
   .yoga-card { padding: 14px; }
 
+  /* Put the compact discovery cards first on the mobile Relax page. */
+  .relax-layout { display: flex; flex-direction: column; gap: 12px; }
+  .relax-main,
+  .relax-side { display: contents; }
+  .relax-heading { order: 0; }
+  .recommendation-card { order: 1; }
+  .sounds-card { order: 2; }
+  .yoga-card { order: 3; }
+  .breathing-card { order: 4; }
+  .meditation-card { order: 5; }
+  .quote-card { order: 6; }
+  .gratitude-card { order: 7; }
+
   .recommendation-card .section-title h3,
   .sounds-card .section-title h3,
   .yoga-card .section-title h3 { font-size: 1rem; }
