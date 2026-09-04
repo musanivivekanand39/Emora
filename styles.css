@@ -1519,6 +1519,60 @@ canvas {
   color: #4f46e5;
 }
 
+.breathing-copy { position: relative; z-index: 2; }
+
+.breathing-icon {
+  display: grid;
+  width: 66px;
+  height: 66px;
+  margin-bottom: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+}
+
+.breathing-icon svg { width: 34px; height: 34px; }
+.breathing-card .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 14px; }
+.breathing-card .secondary-button svg { width: 22px; height: 22px; fill: currentColor; }
+
+@media (min-width: 601px) {
+  .breathing-card {
+    min-height: 430px;
+    padding: clamp(34px, 5vw, 84px);
+    background:
+      radial-gradient(circle at 96% 6%, rgba(255, 255, 255, 0.14) 0 11%, transparent 11.2%),
+      radial-gradient(circle at 88% 108%, rgba(255, 255, 255, 0.1) 0 18%, transparent 18.2%),
+      linear-gradient(132deg, #6846f6 0%, #8468f4 50%, #246da9 100%);
+  }
+
+  .breathing-card h3 { margin-bottom: 22px; font-size: clamp(2.25rem, 4vw, 4.35rem); line-height: 1; }
+  .breathing-card p { max-width: 570px; font-size: clamp(1.2rem, 2.2vw, 2.2rem); line-height: 1.4; }
+  .breathing-card .secondary-button {
+    position: absolute;
+    z-index: 3;
+    bottom: clamp(34px, 5vw, 82px);
+    left: clamp(34px, 5vw, 84px);
+    width: clamp(220px, 25vw, 360px);
+    min-height: 86px;
+    border-radius: var(--radius-pill);
+    font-size: clamp(1.35rem, 2vw, 2.1rem);
+    font-weight: 700;
+  }
+
+  .breathing-card .secondary-button svg { width: 30px; height: 30px; }
+  .breath-circle {
+    top: 50%;
+    right: clamp(46px, 9vw, 150px);
+    bottom: auto;
+    left: auto;
+    width: clamp(180px, 18vw, 260px);
+    height: clamp(180px, 18vw, 260px);
+    font-size: clamp(1.25rem, 2.5vw, 2.2rem);
+    transform: translateY(-50%);
+  }
+}
+
 .custom-timer {
   display: flex;
   align-items: center;
@@ -2722,6 +2776,16 @@ canvas {
     max-width: 100%;
   }
 
+  .breathing-card .breathing-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 10px;
+  }
+
+  .breathing-card .breathing-icon svg { width: 22px; height: 22px; }
+  .breathing-card h3 { margin-bottom: 7px; font-size: 1rem; }
+  .breathing-card p { font-size: 0.88rem; line-height: 1.35; }
+
   .breathing-card .secondary-button {
     position: absolute;
     z-index: 3;
@@ -2734,7 +2798,7 @@ canvas {
 
   .breathing-card .breath-circle {
     right: 20px;
-    bottom: 22px;
+    bottom: 10px;
     left: auto;
     z-index: 1;
     width: 108px;
