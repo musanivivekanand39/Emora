@@ -11,6 +11,10 @@ let creatingAccount = false;
 const showStatus = (message, error = false) => { authStatus.textContent = message; authStatus.classList.toggle("error", error); };
 const setAuthHistory = (signedIn) => {
   const url = signedIn ? "#dashboard" : `${window.location.pathname}${window.location.search}`;
+  if (signedIn && !window.history.state?.emoraAuthenticated) {
+    window.history.pushState({ emoraAuthenticated: true }, "", url);
+    return;
+  }
   window.history.replaceState({ emoraAuthenticated: signedIn }, "", url);
 };
 function selectAuthTab(tab) {
@@ -87,6 +91,17 @@ if (!isFirebaseConfigured) {
   });
   window.addEventListener("pageshow", (event) => {
     if (event.persisted) showApp(auth.currentUser);
+  });
+  window.addEventListener("popstate", () => {
+    // The only entry before the authenticated app is the Login screen. Going
+    // back to it ends the session, so Forward cannot expose a cached dashboard.
+    if (!window.location.hash && auth.currentUser) {
+      clearLocalWellnessData();
+      showApp(null);
+      signOut(auth);
+    } else if (!auth.currentUser) {
+      showApp(null);
+    }
   });
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault(); const form = new FormData(loginForm);

@@ -410,6 +410,11 @@ h1 {
   letter-spacing: 0.01em;
 }
 
+@media (min-width: 601px) {
+  .topbar h1 { line-height: 0.98; }
+  .topbar h1 span { margin-top: 0; line-height: 1; }
+}
+
 h2 {
   margin-bottom: 12px;
   font-size: clamp(1.35rem, 2.1vw, 2.1rem);

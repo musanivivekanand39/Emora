@@ -62,7 +62,7 @@ function closeMobileMenu() {
   mobileMenuToggle?.setAttribute("aria-label", "Open navigation menu");
 }
 
-function setView(name, { history = "push" } = {}) {
+function setView(name, { history = "replace" } = {}) {
   if (!views.some((view) => view.dataset.view === name)) return;
   views.forEach((view) => view.classList.toggle("active", view.dataset.view === name));
   links.forEach((link) => link.classList.toggle("active", link.dataset.viewLink === name));
@@ -85,6 +85,16 @@ mobileMenuToggle?.addEventListener("click", () => {
   const isOpen = document.body.classList.toggle("mobile-menu-open");
   mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
   mobileMenuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+});
+
+document.addEventListener("click", (event) => {
+  if (!document.body.classList.contains("mobile-menu-open")) return;
+  if (mobileNavigation?.contains(event.target) || mobileMenuToggle?.contains(event.target)) return;
+  closeMobileMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMobileMenu();
 });
 
 links.forEach((link) => {
