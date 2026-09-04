@@ -40,8 +40,45 @@ function updateUserUi(user) {
   if (profileName) profileName.textContent = name;
   const profileEmail = document.querySelector("#profileEmailDisplay");
   if (profileEmail) profileEmail.textContent = user.email;
-  document.querySelector("#dailyMessage")?.replaceChildren(document.createTextNode("Your journey starts today."));
-  document.querySelector("#streakCount")?.replaceChildren(document.createTextNode("Day 1"));
+}
+function getLocalDayKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+function dayDifference(from, to) {
+  const start = new Date(`${from}T12:00:00`);
+  const end = new Date(`${to}T12:00:00`);
+  return Math.round((end - start) / 86_400_000);
+}
+function renderStreak(streak) {
+  const count = Math.max(1, Number(streak) || 1);
+  const message = count === 1 ? "Your journey starts today." : "You are building a steady routine.";
+  document.querySelector("#dailyMessage")?.replaceChildren(document.createTextNode(message));
+  document.querySelector("#streakCount")?.replaceChildren(document.createTextNode(`Day ${count}`));
+}
+async function updateUserStreak(user, data) {
+  const today = getLocalDayKey();
+  const previousDay = typeof data.lastActiveDate === "string" ? data.lastActiveDate : "";
+  const previousStreak = Math.max(1, Number(data.streak) || 1);
+  const streak = previousDay === today
+    ? previousStreak
+    : previousDay && dayDifference(previousDay, today) === 1
+      ? previousStreak + 1
+      : 1;
+  renderStreak(streak);
+  if (previousDay !== today || data.streak !== streak) {
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        streak,
+        lastActiveDate: today,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.error("Unable to save user streak", { message: error.message });
+    }
+  }
 }
 async function loadUserData(user) {
   const snapshot = await getDoc(doc(db, "users", user.uid));
@@ -57,6 +94,7 @@ async function loadUserData(user) {
   const goals = data.goals || [];
   document.querySelectorAll(".goal-picker input").forEach((input) => { input.checked = goals.includes(input.value); });
   window.dispatchEvent(new CustomEvent("emora:user-data", { detail: data }));
+  return data;
 }
 async function showApp(user) {
   document.body.classList.toggle("authenticated", Boolean(user));
@@ -68,7 +106,8 @@ async function showApp(user) {
     return;
   }
   updateUserUi(user);
-  await loadUserData(user);
+  const userData = await loadUserData(user);
+  await updateUserStreak(user, userData);
   setAuthHistory(true);
   window.emoraSetView?.("dashboard", { history: "replace" });
 }
