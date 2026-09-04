@@ -66,7 +66,7 @@ async function showApp(user) {
   updateUserUi(user);
   await loadUserData(user);
   setAuthHistory(true);
-  window.emoraSetView?.("dashboard");
+  window.emoraSetView?.("dashboard", { history: "replace" });
 }
 const loginError = "Incorrect email or password";
 const signupError = "Unable to create account. Please try again.";

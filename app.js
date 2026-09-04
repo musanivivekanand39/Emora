@@ -62,10 +62,16 @@ function closeMobileMenu() {
   mobileMenuToggle?.setAttribute("aria-label", "Open navigation menu");
 }
 
-function setView(name) {
+function setView(name, { history = "push" } = {}) {
+  if (!views.some((view) => view.dataset.view === name)) return;
   views.forEach((view) => view.classList.toggle("active", view.dataset.view === name));
   links.forEach((link) => link.classList.toggle("active", link.dataset.viewLink === name));
-  window.history.replaceState(null, "", `#${name}`);
+  const targetUrl = `#${name}`;
+  if (history === "push" && window.location.hash !== targetUrl) {
+    window.history.pushState({ view: name }, "", targetUrl);
+  } else if (history === "replace") {
+    window.history.replaceState({ view: name }, "", targetUrl);
+  }
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   requestAnimationFrame(() => {
     drawCharts();
@@ -89,7 +95,12 @@ links.forEach((link) => {
 });
 
 const initialView = window.location.hash.replace("#", "") || "dashboard";
-if (views.some((view) => view.dataset.view === initialView)) setView(initialView);
+if (views.some((view) => view.dataset.view === initialView)) setView(initialView, { history: "replace" });
+
+window.addEventListener("popstate", () => {
+  const view = window.location.hash.replace("#", "") || "dashboard";
+  setView(view, { history: "none" });
+});
 
 const themeToggle = document.querySelector("#themeToggle");
 const savedTheme = localStorage.getItem("emora-theme");
