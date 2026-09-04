@@ -2643,7 +2643,7 @@ canvas {
   /* On the Chat page, keep the floating shortcut below the composer instead
      of overlapping its send area. */
   body:has(#chat.active) .fab {
-    bottom: calc(18px + env(safe-area-inset-bottom));
+    bottom: calc(4px + env(safe-area-inset-bottom));
   }
 }
 
