@@ -9,6 +9,10 @@ const signupForm = document.querySelector("#signupForm");
 const forgotPasswordButton = document.querySelector("#forgotPasswordButton");
 let creatingAccount = false;
 const showStatus = (message, error = false) => { authStatus.textContent = message; authStatus.classList.toggle("error", error); };
+const setAuthHistory = (signedIn) => {
+  const url = signedIn ? "#dashboard" : `${window.location.pathname}${window.location.search}`;
+  window.history.replaceState({ emoraAuthenticated: signedIn }, "", url);
+};
 function selectAuthTab(tab) {
   const login = tab === "login";
   loginForm.hidden = !login; signupForm.hidden = login;
@@ -56,11 +60,12 @@ async function showApp(user) {
   if (!user) {
     loginForm.reset();
     signupForm.reset();
+    setAuthHistory(false);
     return;
   }
   updateUserUi(user);
   await loadUserData(user);
-  window.location.hash = "dashboard";
+  setAuthHistory(true);
   window.emoraSetView?.("dashboard");
 }
 const loginError = "Incorrect email or password";
@@ -79,6 +84,9 @@ if (!isFirebaseConfigured) {
     await showApp(user);
     document.body.classList.add("auth-ready");
     if (user) showStatus("");
+  });
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) showApp(auth.currentUser);
   });
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault(); const form = new FormData(loginForm);
@@ -121,6 +129,12 @@ function clearLocalWellnessData() {
   Object.keys(localStorage).filter((key) => key.startsWith("emora-")).forEach((key) => localStorage.removeItem(key));
 }
 window.emoraAuth = {
-  signOut: async () => { clearLocalWellnessData(); loginForm.reset(); signupForm.reset(); if (auth) await signOut(auth); },
+  signOut: async () => {
+    clearLocalWellnessData();
+    loginForm.reset();
+    signupForm.reset();
+    setAuthHistory(false);
+    if (auth) await signOut(auth);
+  },
   saveUserData: (data) => auth?.currentUser ? saveUserData(auth.currentUser, data) : Promise.resolve()
 };
