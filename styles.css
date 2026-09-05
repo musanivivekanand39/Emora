@@ -1561,16 +1561,6 @@ canvas {
   }
 
   .breathing-card .secondary-button svg { width: 30px; height: 30px; }
-  .breath-circle {
-    top: 50%;
-    right: clamp(46px, 9vw, 150px);
-    bottom: auto;
-    left: auto;
-    width: clamp(180px, 18vw, 260px);
-    height: clamp(180px, 18vw, 260px);
-    font-size: clamp(1.25rem, 2.5vw, 2.2rem);
-    transform: translateY(-50%);
-  }
 }
 
 .custom-timer {
@@ -1620,6 +1610,21 @@ canvas {
 
 .breath-circle.breathing {
   animation: breatheScale var(--breath-cycle, 10s) ease-in-out infinite;
+}
+
+/* This must follow the base ring styles so desktop and tablet positioning is
+   not overwritten by the mobile-centered default. */
+@media (min-width: 601px) {
+  .breath-circle {
+    top: 50%;
+    right: clamp(46px, 9vw, 150px);
+    bottom: auto;
+    left: auto;
+    width: clamp(180px, 18vw, 260px);
+    height: clamp(180px, 18vw, 260px);
+    font-size: clamp(1.25rem, 2.5vw, 2.2rem);
+    transform: translateY(-50%);
+  }
 }
 
 .meditation-card p,
