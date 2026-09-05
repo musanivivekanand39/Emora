@@ -2183,6 +2183,44 @@ canvas {
   white-space: nowrap;
 }
 
+.metric-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.metric-label small {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.metric-progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: rgba(15, 23, 42, 0.58);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+.metric-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--metric-accent);
+  box-shadow: 0 0 13px var(--metric-glow);
+}
+
+.metric-joy { --metric-accent: var(--teal); --metric-glow: rgba(61, 217, 197, 0.48); }
+.metric-calm { --metric-accent: var(--primary); --metric-glow: rgba(124, 92, 255, 0.5); }
+.metric-stress { --metric-accent: var(--warning); --metric-glow: rgba(245, 158, 11, 0.46); }
+.metric-connection { --metric-accent: var(--pink); --metric-glow: rgba(236, 72, 153, 0.46); }
+
+.metric-joy .metric-progress span { width: 76%; }
+.metric-calm .metric-progress span { width: 84%; }
+.metric-stress .metric-progress span { width: 31%; }
+.metric-connection .metric-progress span { width: 69%; }
+
 .settings-card {
   grid-column: span 2;
   padding: 22px;

@@ -10,9 +10,25 @@
               </div>
               <canvas id="monthlyChart" width="900" height="320" aria-label="Monthly wellness analytics chart"></canvas>
             </article>
-            <article class="metric-card glass"><small>Joy</small><strong data-counter="76">0</strong><span class="dot teal"></span></article>
-            <article class="metric-card glass"><small>Calm</small><strong data-counter="84">0</strong><span class="dot purple"></span></article>
-            <article class="metric-card glass"><small>Stress</small><strong data-counter="31">0</strong><span class="dot orange"></span></article>
-            <article class="metric-card glass"><small>Connection</small><strong data-counter="69">0</strong><span class="dot pink"></span></article>
+            <article class="metric-card glass metric-joy">
+              <div class="metric-label"><span class="dot teal"></span><small>Joy</small></div>
+              <strong data-counter="76">0</strong>
+              <div class="metric-progress" role="progressbar" aria-label="Joy" aria-valuemin="0" aria-valuemax="100" aria-valuenow="76"><span></span></div>
+            </article>
+            <article class="metric-card glass metric-calm">
+              <div class="metric-label"><span class="dot purple"></span><small>Calm</small></div>
+              <strong data-counter="84">0</strong>
+              <div class="metric-progress" role="progressbar" aria-label="Calm" aria-valuemin="0" aria-valuemax="100" aria-valuenow="84"><span></span></div>
+            </article>
+            <article class="metric-card glass metric-stress">
+              <div class="metric-label"><span class="dot orange"></span><small>Stress</small></div>
+              <strong data-counter="31">0</strong>
+              <div class="metric-progress" role="progressbar" aria-label="Stress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="31"><span></span></div>
+            </article>
+            <article class="metric-card glass metric-connection">
+              <div class="metric-label"><span class="dot pink"></span><small>Connection</small></div>
+              <strong data-counter="69">0</strong>
+              <div class="metric-progress" role="progressbar" aria-label="Connection" aria-valuemin="0" aria-valuemax="100" aria-valuenow="69"><span></span></div>
+            </article>
           </div>
         </section>
