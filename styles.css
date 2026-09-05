@@ -1585,6 +1585,20 @@ canvas {
   animation: breatheScale var(--breath-cycle, 10s) ease-in-out infinite;
 }
 
+/* The ring is positioned differently at each breakpoint. Its animation must
+   retain that positioning transform instead of replacing it while active. */
+@media (min-width: 601px) {
+  .breath-circle.breathing {
+    animation-name: breatheScaleVertical;
+  }
+}
+
+@media (max-width: 600px) {
+  .breath-circle.breathing {
+    animation-name: breatheScaleCentered;
+  }
+}
+
 /* Keep the same calm, compact breathing-card composition on tablets and
    desktops: content left, animation right, and a clear start action below. */
 @media (min-width: 601px) {
@@ -2472,6 +2486,16 @@ canvas {
 @keyframes breatheScale {
   0%, 100% { transform: translateX(-50%) scale(0.82); }
   40% { transform: translateX(-50%) scale(1.18); }
+}
+
+@keyframes breatheScaleVertical {
+  0%, 100% { transform: translateY(-50%) scale(0.82); }
+  40% { transform: translateY(-50%) scale(1.18); }
+}
+
+@keyframes breatheScaleCentered {
+  0%, 100% { transform: scale(0.82); }
+  40% { transform: scale(1.18); }
 }
 
 @keyframes popIn {

@@ -699,6 +699,7 @@ document.querySelectorAll("#sentimentTabs button").forEach((button) => {
 
 const breathCircle = document.querySelector("#breathCircle");
 const breathingStart = document.querySelector("#breathingStart");
+const breathingButtonLabel = breathingStart.querySelector(".breathing-button-label");
 let breathingTimeout = null;
 let breathingPhase = "inhale";
 const standardBreathingPace = { inhale: 4, exhale: 6 };
@@ -720,7 +721,10 @@ function runBreathingPhase() {
 
 breathingStart.addEventListener("click", () => {
   const active = breathCircle.classList.toggle("breathing");
-  breathingStart.textContent = active ? "Pause" : "Start";
+  // Update only the label. Keeping the button's icon and fixed structure
+  // prevents a layout shift when its state changes.
+  breathingButtonLabel.textContent = active ? "Pause" : "Start";
+  breathingStart.setAttribute("aria-pressed", String(active));
 
   if (!active) {
     clearTimeout(breathingTimeout);
