@@ -2216,10 +2216,10 @@ canvas {
 .metric-stress { --metric-accent: var(--warning); --metric-glow: rgba(245, 158, 11, 0.46); }
 .metric-connection { --metric-accent: var(--pink); --metric-glow: rgba(236, 72, 153, 0.46); }
 
-.metric-joy .metric-progress span { width: 76%; }
-.metric-calm .metric-progress span { width: 84%; }
-.metric-stress .metric-progress span { width: 31%; }
-.metric-connection .metric-progress span { width: 69%; }
+.metric-joy .metric-progress span,
+.metric-calm .metric-progress span,
+.metric-stress .metric-progress span,
+.metric-connection .metric-progress span { width: 0; }
 
 .settings-card {
   grid-column: span 2;
