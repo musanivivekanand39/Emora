@@ -697,6 +697,18 @@ document.querySelectorAll("#sentimentTabs button").forEach((button) => {
   });
 });
 
+function renderMountedStreak({ count, message }) {
+  document.querySelectorAll("[data-streak-message]").forEach((element) => {
+    element.replaceChildren(document.createTextNode(message));
+  });
+  document.querySelectorAll("[data-streak-count]").forEach((element) => {
+    element.replaceChildren(document.createTextNode(`Day ${count}`));
+  });
+}
+
+document.addEventListener("emora:streak", (event) => renderMountedStreak(event.detail));
+if (window.emoraStreak) renderMountedStreak(window.emoraStreak);
+
 const breathCircle = document.querySelector("#breathCircle");
 const breathingStart = document.querySelector("#breathingStart");
 const breathingButtonLabel = breathingStart.querySelector(".breathing-button-label");
