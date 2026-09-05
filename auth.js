@@ -57,14 +57,9 @@ function renderStreak(streak) {
   const message = count === 1 ? "Your journey starts today." : "You are building a steady routine.";
   document.querySelector("#dailyMessage")?.replaceChildren(document.createTextNode(message));
   document.querySelector("#streakCount")?.replaceChildren(document.createTextNode(`Day ${count}`));
-  document.querySelectorAll("[data-streak-message]").forEach((element) => {
-    element.replaceChildren(document.createTextNode(message));
+  document.querySelectorAll("[data-nav-streak-count]").forEach((element) => {
+    element.replaceChildren(document.createTextNode(String(count)));
   });
-  document.querySelectorAll("[data-streak-count]").forEach((element) => {
-    element.replaceChildren(document.createTextNode(`Day ${count}`));
-  });
-  window.emoraStreak = { count, message };
-  document.dispatchEvent(new CustomEvent("emora:streak", { detail: window.emoraStreak }));
 }
 async function updateUserStreak(user, data) {
   const today = getLocalDayKey();

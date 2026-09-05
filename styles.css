@@ -319,10 +319,6 @@ button {
   background: rgba(39, 52, 73, 0.58);
 }
 
-.mobile-streak-card {
-  display: none;
-}
-
 .sidebar-card p {
   margin: 12px 0 2px;
   color: var(--text-2);
@@ -439,6 +435,10 @@ p {
   display: flex;
   align-items: center;
   gap: var(--space-8);
+}
+
+.nav-streak {
+  display: none;
 }
 
 .icon-button,
@@ -2616,7 +2616,6 @@ canvas {
 
   .welcome-card,
   .stat-card,
-  .mobile-streak-card,
   .weekly-card,
   .chart-card,
   .insight-list,
@@ -2627,38 +2626,6 @@ canvas {
 
   .welcome-card {
     grid-template-columns: 1fr;
-  }
-
-  .mobile-streak-card {
-    display: flex;
-    grid-column: 1 / -1;
-    align-items: center;
-    gap: 14px;
-    min-height: 88px;
-    padding: 16px 18px;
-  }
-
-  .mobile-streak-card .mini-signal {
-    flex: 0 0 auto;
-    margin: 0;
-  }
-
-  .mobile-streak-card small,
-  .mobile-streak-card strong {
-    display: block;
-  }
-
-  .mobile-streak-card small { color: var(--text-2); }
-  .mobile-streak-card strong { margin-top: 2px; font-size: 1.12rem; }
-
-  .mobile-streak-badge {
-    margin-left: auto;
-    padding: 7px 10px;
-    border-radius: var(--radius-pill);
-    background: rgba(61, 217, 197, 0.12);
-    color: var(--teal);
-    font-size: 0.76rem;
-    font-weight: 700;
   }
 
   .wellness-illustration {
@@ -2773,7 +2740,7 @@ canvas {
 
   .topbar {
     display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-columns: 36px minmax(0, 1fr) auto auto;
     align-items: center;
     padding: 10px 12px 12px;
     gap: 8px;
@@ -2787,9 +2754,28 @@ canvas {
   }
 
   .top-actions {
-    grid-column: 3;
+    grid-column: 4;
     grid-row: 1;
   }
+
+  .nav-streak {
+    grid-column: 3;
+    grid-row: 1;
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 8px;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: var(--radius-pill);
+    background: rgba(249, 115, 22, 0.1);
+    color: #fbbf24;
+    white-space: nowrap;
+  }
+
+  .nav-streak > span { font-size: 0.92rem; line-height: 1; }
+  .nav-streak strong { color: #fff7ed; font-size: 0.82rem; line-height: 1; }
+  .nav-streak small { color: #fbbf24; font-size: 0.62rem; font-weight: 600; line-height: 1; }
 
   .topbar h1 {
     max-width: none;
@@ -2811,18 +2797,6 @@ canvas {
   .settings-card {
     padding: 18px;
   }
-
-  .mobile-streak-card {
-    min-height: 76px;
-    gap: 10px;
-    padding: 13px 14px;
-    border-radius: 18px;
-  }
-
-  .mobile-streak-card .mini-signal { transform: scale(0.88); }
-  .mobile-streak-card small { font-size: 0.78rem; }
-  .mobile-streak-card strong { font-size: 1rem; }
-  .mobile-streak-badge { padding: 6px 8px; font-size: 0.68rem; }
 
   .welcome-actions {
     display: grid;
