@@ -869,6 +869,7 @@ document.querySelector("#saveContact").addEventListener("click", () => {
 });
 
 let nearbyDoctors = [];
+let ratingEnabledDoctorId = null;
 
 function doctorDistanceLabel(distanceKm) {
   return distanceKm < 1 ? `${Math.max(1, Math.round(distanceKm * 1000))} m away` : `${distanceKm.toFixed(1)} km away`;
@@ -888,6 +889,9 @@ function renderDoctorDirectory() {
     const clinic = String(doctor.clinic || doctor.hospital || "Independent practice");
     const address = String(doctor.address || "Address available after calling");
     const rating = Math.min(5, Math.max(0, Number(doctor.userRating) || 0));
+    const ratingAverage = Math.min(5, Math.max(0, Number(doctor.ratingAverage) || 0));
+    const ratingCount = Math.max(0, Number(doctor.ratingCount) || 0);
+    const canRate = Boolean(rating) || ratingEnabledDoctorId === doctor.id;
     const ratingButtons = [1, 2, 3, 4, 5].map((value) => `<button class="doctor-rating-star${value <= rating ? " selected" : ""}" type="button" data-doctor-id="${escapeHtml(doctor.id)}" data-doctor-rating="${value}" aria-label="Rate ${escapeHtml(doctor.name || "doctor")} ${value} out of 5" aria-pressed="${value <= rating}">★</button>`).join("");
     return `
       <article class="doctor-card">
@@ -896,9 +900,10 @@ function renderDoctorDirectory() {
           <div class="doctor-card-title"><div><h4>${escapeHtml(doctor.name || "Doctor")}</h4><p>${escapeHtml(specialty)}</p></div><span class="doctor-distance">${doctorDistanceLabel(doctor.distanceKm)}</span></div>
           <p class="doctor-clinic">${escapeHtml(clinic)} · ${escapeHtml(address)}</p>
           <div class="doctor-card-footer">
-            <div class="doctor-rating" aria-label="Your rating">${ratingButtons}<small>${rating ? "Your rating" : "Rate after getting help"}</small></div>
+            <div class="doctor-public-rating" aria-label="Doctor rating">${ratingCount ? `<span>★</span><strong>${ratingAverage.toFixed(1)}</strong><small>${ratingCount} rating${ratingCount === 1 ? "" : "s"}</small>` : `<small>No ratings yet</small>`}</div>
             ${phone ? `<a class="tiny-button doctor-call" href="tel:${encodeURIComponent(phone)}">Call doctor</a>` : ""}
           </div>
+          <div class="doctor-rating-action">${canRate ? `<div class="doctor-rating" aria-label="Your rating">${ratingButtons}<small>${rating ? "Your rating" : "Choose a rating"}</small></div>` : `<button class="doctor-help-button" type="button" data-doctor-help="${escapeHtml(doctor.id)}">I received help</button>`}</div>
         </div>
       </article>`;
   }).join("");
@@ -910,13 +915,29 @@ function renderDoctorDirectory() {
       const rating = Number(button.dataset.doctorRating);
       button.disabled = true;
       try {
+        const previousRating = Math.max(0, Number(doctor.userRating) || 0);
+        const previousCount = Math.max(0, Number(doctor.ratingCount) || 0);
+        const previousAverage = Math.max(0, Number(doctor.ratingAverage) || 0);
         await window.emoraAuth.saveDoctorRating(doctor.id, rating);
         doctor.userRating = rating;
+        doctor.helpReceived = true;
+        doctor.ratingCount = previousCount + (previousRating ? 0 : 1);
+        doctor.ratingAverage = previousRating
+          ? ((previousAverage * previousCount) - previousRating + rating) / previousCount
+          : ((previousAverage * previousCount) + rating) / doctor.ratingCount;
+        ratingEnabledDoctorId = null;
         renderDoctorDirectory();
       } catch (_error) {
         document.querySelector("#doctorDirectoryStatus").textContent = "Unable to save your rating right now. Please try again.";
         button.disabled = false;
       }
+    });
+  });
+
+  document.querySelectorAll("[data-doctor-help]").forEach((button) => {
+    button.addEventListener("click", () => {
+      ratingEnabledDoctorId = button.dataset.doctorHelp;
+      renderDoctorDirectory();
     });
   });
 }

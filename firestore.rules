@@ -16,6 +16,7 @@ service cloud.firestore {
         allow create, update: if request.auth != null
           && request.auth.uid == userId
           && request.resource.data.userId == request.auth.uid
+          && request.resource.data.helpReceived == true
           && request.resource.data.rating is number
           && request.resource.data.rating >= 1
           && request.resource.data.rating <= 5;

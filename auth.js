@@ -207,8 +207,25 @@ async function getNearbyDoctors(location) {
     const distanceKm = distanceInKm(location, { latitude, longitude });
     const serviceRadiusKm = Math.max(1, Number(doctor.serviceRadiusKm) || 50);
     if (distanceKm > serviceRadiusKm) return null;
-    const ratingDocument = await getDoc(doc(db, "doctors", doctorDocument.id, "ratings", auth.currentUser.uid));
-    return { id: doctorDocument.id, ...doctor, distanceKm, userRating: Number(ratingDocument.data()?.rating) || 0 };
+    const ratingsSnapshot = await getDocs(collection(db, "doctors", doctorDocument.id, "ratings"));
+    const submittedRatings = ratingsSnapshot.docs
+      .map((ratingDocument) => ({ userId: ratingDocument.id, ...ratingDocument.data() }))
+      .filter((rating) => Number.isFinite(Number(rating.rating)) && Number(rating.rating) >= 1 && Number(rating.rating) <= 5);
+    const ownerRatingCount = Math.max(0, Number(doctor.ratingCount) || 0);
+    const ownerRatingAverage = Math.min(5, Math.max(0, Number(doctor.ratingAverage) || 0));
+    const submittedTotal = submittedRatings.reduce((sum, rating) => sum + Number(rating.rating), 0);
+    const ratingCount = ownerRatingCount + submittedRatings.length;
+    const ratingAverage = ratingCount ? ((ownerRatingAverage * ownerRatingCount) + submittedTotal) / ratingCount : 0;
+    const ownRating = submittedRatings.find((rating) => rating.userId === auth.currentUser.uid);
+    return {
+      id: doctorDocument.id,
+      ...doctor,
+      distanceKm,
+      ratingAverage,
+      ratingCount,
+      userRating: Number(ownRating?.rating) || 0,
+      helpReceived: ownRating?.helpReceived === true
+    };
   }));
   return doctors.filter(Boolean).sort((a, b) => a.distanceKm - b.distanceKm);
 }
@@ -219,6 +236,7 @@ async function saveDoctorRating(doctorId, rating) {
   await setDoc(doc(db, "doctors", doctorId, "ratings", auth.currentUser.uid), {
     userId: auth.currentUser.uid,
     rating: safeRating,
+    helpReceived: true,
     updatedAt: serverTimestamp()
   }, { merge: true });
 }

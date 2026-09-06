@@ -1919,7 +1919,7 @@ canvas {
 
 .doctor-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1972,6 +1972,11 @@ canvas {
 
 .doctor-clinic { margin-top: 8px; }
 .doctor-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.doctor-public-rating { display: flex; align-items: center; gap: 4px; min-height: 26px; }
+.doctor-public-rating > span { color: var(--warning); font-size: 1rem; text-shadow: 0 0 10px rgba(245, 158, 11, 0.35); }
+.doctor-public-rating strong { color: var(--text); font-size: 0.85rem; }
+.doctor-public-rating small { color: var(--muted); font-size: 0.7rem; }
+.doctor-rating-action { margin-top: 10px; }
 .doctor-rating { display: flex; align-items: center; gap: 2px; min-width: 0; }
 .doctor-rating small { margin-left: 5px; color: var(--muted); font-size: 0.67rem; white-space: nowrap; }
 
@@ -1990,6 +1995,8 @@ canvas {
 .doctor-rating-star.selected { color: var(--warning); text-shadow: 0 0 10px rgba(245, 158, 11, 0.35); }
 .doctor-rating-star:hover { color: #fbbf24; }
 .doctor-rating-star:disabled { cursor: wait; opacity: 0.65; }
+.doctor-help-button { min-height: 32px; padding: 0 11px; border: 1px solid rgba(124, 92, 255, 0.28); border-radius: var(--radius-pill); background: rgba(124, 92, 255, 0.12); color: var(--primary-2); cursor: pointer; font: inherit; font-size: 0.74rem; font-weight: 600; }
+.doctor-help-button:hover { background: rgba(124, 92, 255, 0.2); }
 .doctor-call { min-height: 34px; flex: 0 0 auto; padding: 0 11px; color: var(--text); text-decoration: none; font-size: 0.76rem; }
 
 .contact-form {
