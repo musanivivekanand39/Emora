@@ -1917,6 +1917,34 @@ canvas {
   font-size: 0.88rem;
 }
 
+.manual-location-test {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -4px 0 16px;
+  padding: 10px;
+  border: 1px dashed rgba(155, 140, 255, 0.32);
+  border-radius: 14px;
+  background: rgba(124, 92, 255, 0.06);
+}
+
+.manual-location-test > span { color: var(--primary-2); font-size: 0.72rem; font-weight: 700; }
+.manual-location-test input {
+  width: 118px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: 0;
+  background: rgba(15, 23, 42, 0.3);
+  color: var(--text);
+  padding: 0 10px;
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.manual-location-test input:focus { border-color: var(--primary-2); }
+
 .doctor-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2955,6 +2983,11 @@ canvas {
 
   .doctor-directory-head .primary-button { width: 100%; }
   .doctor-list { grid-template-columns: 1fr; }
+  .manual-location-test { align-items: stretch; }
+  .manual-location-test > span { width: 100%; }
+  .manual-location-test label,
+  .manual-location-test input,
+  .manual-location-test .tiny-button { width: 100%; }
   .doctor-card-footer { align-items: flex-start; flex-direction: column; }
   .doctor-rating small { white-space: normal; }
   .doctor-call { width: 100%; }

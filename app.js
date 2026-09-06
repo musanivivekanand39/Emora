@@ -949,6 +949,27 @@ function locationErrorMessage(error) {
   return "Location is unavailable in this browser. Please check your device permissions and try again.";
 }
 
+async function searchDoctorsAt(location, button) {
+  const status = document.querySelector("#doctorDirectoryStatus");
+  try {
+    status.textContent = "Finding doctors from the Emora directory near this test location…";
+    nearbyDoctors = await window.emoraAuth.getNearbyDoctors(location);
+    renderDoctorDirectory();
+    status.textContent = nearbyDoctors.length
+      ? `${nearbyDoctors.length} doctor${nearbyDoctors.length === 1 ? "" : "s"} found near this location. This location was not saved.`
+      : "No matching doctors were found near this location. This location was not saved.";
+  } catch (_error) {
+    nearbyDoctors = [];
+    document.querySelector("#doctorList").innerHTML = "";
+    status.textContent = "Unable to load the doctor directory right now. Please try again.";
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = button.id === "findDoctors" ? "Refresh nearby doctors" : "Test location";
+    }
+  }
+}
+
 document.querySelector("#findDoctors")?.addEventListener("click", () => {
   const button = document.querySelector("#findDoctors");
   const status = document.querySelector("#doctorDirectoryStatus");
@@ -965,26 +986,32 @@ document.querySelector("#findDoctors")?.addEventListener("click", () => {
   button.textContent = "Getting location…";
   status.textContent = "Waiting for your permission. Your location is used only for this search.";
   navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-    try {
-      status.textContent = "Finding doctors from the Emora directory near you…";
-      nearbyDoctors = await window.emoraAuth.getNearbyDoctors({ latitude: coords.latitude, longitude: coords.longitude });
-      renderDoctorDirectory();
-      status.textContent = nearbyDoctors.length
-        ? `${nearbyDoctors.length} doctor${nearbyDoctors.length === 1 ? "" : "s"} found near you. Your location was not saved.`
-        : "No matching doctors were found near this location. Your location was not saved.";
-    } catch (_error) {
-      nearbyDoctors = [];
-      document.querySelector("#doctorList").innerHTML = "";
-      status.textContent = "Unable to load the doctor directory right now. Please try again.";
-    } finally {
-      button.disabled = false;
-      button.textContent = "Refresh nearby doctors";
-    }
+    searchDoctorsAt({ latitude: coords.latitude, longitude: coords.longitude }, button);
   }, (error) => {
     status.textContent = locationErrorMessage(error);
     button.disabled = false;
     button.textContent = "Use my location";
   }, { enableHighAccuracy: false, timeout: 12_000, maximumAge: 300_000 });
+});
+
+document.querySelector("#testDoctorLocation")?.addEventListener("click", () => {
+  const button = document.querySelector("#testDoctorLocation");
+  const status = document.querySelector("#doctorDirectoryStatus");
+  const latitudeValue = document.querySelector("#manualLatitude").value.trim();
+  const longitudeValue = document.querySelector("#manualLongitude").value.trim();
+  const latitude = Number(latitudeValue);
+  const longitude = Number(longitudeValue);
+  if (!latitudeValue || !longitudeValue || !Number.isFinite(latitude) || !Number.isFinite(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+    status.textContent = "Enter a valid latitude (-90 to 90) and longitude (-180 to 180) to test the directory.";
+    return;
+  }
+  if (!window.emoraAuth?.getNearbyDoctors) {
+    status.textContent = "Please sign in to use the doctor directory.";
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "Testing…";
+  searchDoctorsAt({ latitude, longitude }, button);
 });
 
 const gratitudeText = document.querySelector("#gratitudeText");

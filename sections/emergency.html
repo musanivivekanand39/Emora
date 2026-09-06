@@ -24,6 +24,12 @@
                 <button class="primary-button ripple" type="button" id="findDoctors">Use my location</button>
               </div>
               <p class="doctor-directory-status" id="doctorDirectoryStatus" role="status">Location is off. Enable it to see doctors from the Emora directory near you.</p>
+              <div class="manual-location-test" aria-label="Temporary location test controls">
+                <span>Testing only</span>
+                <label><input id="manualLatitude" type="number" step="any" inputmode="decimal" placeholder="Latitude" aria-label="Test latitude" /></label>
+                <label><input id="manualLongitude" type="number" step="any" inputmode="decimal" placeholder="Longitude" aria-label="Test longitude" /></label>
+                <button class="tiny-button" type="button" id="testDoctorLocation">Test location</button>
+              </div>
               <div class="doctor-list" id="doctorList"></div>
             </article>
 
