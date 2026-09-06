@@ -1,6 +1,6 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
 import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
 const authStatus = document.querySelector("#authStatus");
@@ -185,6 +185,44 @@ if (!isFirebaseConfigured) {
 function clearLocalWellnessData() {
   Object.keys(localStorage).filter((key) => key.startsWith("emora-")).forEach((key) => localStorage.removeItem(key));
 }
+
+function distanceInKm(from, to) {
+  const toRadians = (value) => value * Math.PI / 180;
+  const earthRadiusKm = 6371;
+  const latitudeDistance = toRadians(to.latitude - from.latitude);
+  const longitudeDistance = toRadians(to.longitude - from.longitude);
+  const a = Math.sin(latitudeDistance / 2) ** 2
+    + Math.cos(toRadians(from.latitude)) * Math.cos(toRadians(to.latitude)) * Math.sin(longitudeDistance / 2) ** 2;
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+async function getNearbyDoctors(location) {
+  if (!db || !auth?.currentUser) return [];
+  const doctorsSnapshot = await getDocs(collection(db, "doctors"));
+  const doctors = await Promise.all(doctorsSnapshot.docs.map(async (doctorDocument) => {
+    const doctor = doctorDocument.data();
+    const latitude = Number(doctor.latitude);
+    const longitude = Number(doctor.longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || doctor.active === false) return null;
+    const distanceKm = distanceInKm(location, { latitude, longitude });
+    const serviceRadiusKm = Math.max(1, Number(doctor.serviceRadiusKm) || 50);
+    if (distanceKm > serviceRadiusKm) return null;
+    const ratingDocument = await getDoc(doc(db, "doctors", doctorDocument.id, "ratings", auth.currentUser.uid));
+    return { id: doctorDocument.id, ...doctor, distanceKm, userRating: Number(ratingDocument.data()?.rating) || 0 };
+  }));
+  return doctors.filter(Boolean).sort((a, b) => a.distanceKm - b.distanceKm);
+}
+
+async function saveDoctorRating(doctorId, rating) {
+  if (!db || !auth?.currentUser) throw new Error("Sign in required");
+  const safeRating = Math.min(5, Math.max(1, Number(rating)));
+  await setDoc(doc(db, "doctors", doctorId, "ratings", auth.currentUser.uid), {
+    userId: auth.currentUser.uid,
+    rating: safeRating,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
 window.emoraAuth = {
   signOut: async () => {
     clearLocalWellnessData();
@@ -193,5 +231,7 @@ window.emoraAuth = {
     setAuthHistory(false);
     if (auth) await signOut(auth);
   },
-  saveUserData: (data) => auth?.currentUser ? saveUserData(auth.currentUser, data) : Promise.resolve()
+  saveUserData: (data) => auth?.currentUser ? saveUserData(auth.currentUser, data) : Promise.resolve(),
+  getNearbyDoctors,
+  saveDoctorRating
 };

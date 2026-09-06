@@ -868,6 +868,104 @@ document.querySelector("#saveContact").addEventListener("click", () => {
   renderEmergencyContacts();
 });
 
+let nearbyDoctors = [];
+
+function doctorDistanceLabel(distanceKm) {
+  return distanceKm < 1 ? `${Math.max(1, Math.round(distanceKm * 1000))} m away` : `${distanceKm.toFixed(1)} km away`;
+}
+
+function renderDoctorDirectory() {
+  const list = document.querySelector("#doctorList");
+  if (!list) return;
+  if (!nearbyDoctors.length) {
+    list.innerHTML = `<div class="doctor-empty">No doctors from the Emora directory are available within their service area for this location.</div>`;
+    return;
+  }
+
+  list.innerHTML = nearbyDoctors.map((doctor) => {
+    const phone = String(doctor.phone || "").trim();
+    const specialty = String(doctor.specialty || "Mental health professional");
+    const clinic = String(doctor.clinic || doctor.hospital || "Independent practice");
+    const address = String(doctor.address || "Address available after calling");
+    const rating = Math.min(5, Math.max(0, Number(doctor.userRating) || 0));
+    const ratingButtons = [1, 2, 3, 4, 5].map((value) => `<button class="doctor-rating-star${value <= rating ? " selected" : ""}" type="button" data-doctor-id="${escapeHtml(doctor.id)}" data-doctor-rating="${value}" aria-label="Rate ${escapeHtml(doctor.name || "doctor")} ${value} out of 5" aria-pressed="${value <= rating}">★</button>`).join("");
+    return `
+      <article class="doctor-card">
+        <div class="doctor-avatar" aria-hidden="true">${escapeHtml(String(doctor.name || "D").trim().charAt(0).toUpperCase() || "D")}</div>
+        <div class="doctor-card-copy">
+          <div class="doctor-card-title"><div><h4>${escapeHtml(doctor.name || "Doctor")}</h4><p>${escapeHtml(specialty)}</p></div><span class="doctor-distance">${doctorDistanceLabel(doctor.distanceKm)}</span></div>
+          <p class="doctor-clinic">${escapeHtml(clinic)} · ${escapeHtml(address)}</p>
+          <div class="doctor-card-footer">
+            <div class="doctor-rating" aria-label="Your rating">${ratingButtons}<small>${rating ? "Your rating" : "Rate after getting help"}</small></div>
+            ${phone ? `<a class="tiny-button doctor-call" href="tel:${encodeURIComponent(phone)}">Call doctor</a>` : ""}
+          </div>
+        </div>
+      </article>`;
+  }).join("");
+
+  document.querySelectorAll("[data-doctor-rating]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const doctor = nearbyDoctors.find((item) => item.id === button.dataset.doctorId);
+      if (!doctor || !window.emoraAuth?.saveDoctorRating) return;
+      const rating = Number(button.dataset.doctorRating);
+      button.disabled = true;
+      try {
+        await window.emoraAuth.saveDoctorRating(doctor.id, rating);
+        doctor.userRating = rating;
+        renderDoctorDirectory();
+      } catch (_error) {
+        document.querySelector("#doctorDirectoryStatus").textContent = "Unable to save your rating right now. Please try again.";
+        button.disabled = false;
+      }
+    });
+  });
+}
+
+function locationErrorMessage(error) {
+  if (error?.code === 1) return "Location was not shared. You can enable it later whenever you want to search for nearby doctors.";
+  if (error?.code === 2) return "Your location could not be determined. Check your device location settings and try again.";
+  if (error?.code === 3) return "The location request timed out. Please try again.";
+  return "Location is unavailable in this browser. Please check your device permissions and try again.";
+}
+
+document.querySelector("#findDoctors")?.addEventListener("click", () => {
+  const button = document.querySelector("#findDoctors");
+  const status = document.querySelector("#doctorDirectoryStatus");
+  if (!navigator.geolocation) {
+    status.textContent = "Location is unavailable in this browser. Please check your device permissions and try again.";
+    return;
+  }
+  if (!window.emoraAuth?.getNearbyDoctors) {
+    status.textContent = "Please sign in to use the doctor directory.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Getting location…";
+  status.textContent = "Waiting for your permission. Your location is used only for this search.";
+  navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+    try {
+      status.textContent = "Finding doctors from the Emora directory near you…";
+      nearbyDoctors = await window.emoraAuth.getNearbyDoctors({ latitude: coords.latitude, longitude: coords.longitude });
+      renderDoctorDirectory();
+      status.textContent = nearbyDoctors.length
+        ? `${nearbyDoctors.length} doctor${nearbyDoctors.length === 1 ? "" : "s"} found near you. Your location was not saved.`
+        : "No matching doctors were found near this location. Your location was not saved.";
+    } catch (_error) {
+      nearbyDoctors = [];
+      document.querySelector("#doctorList").innerHTML = "";
+      status.textContent = "Unable to load the doctor directory right now. Please try again.";
+    } finally {
+      button.disabled = false;
+      button.textContent = "Refresh nearby doctors";
+    }
+  }, (error) => {
+    status.textContent = locationErrorMessage(error);
+    button.disabled = false;
+    button.textContent = "Use my location";
+  }, { enableHighAccuracy: false, timeout: 12_000, maximumAge: 300_000 });
+});
+
 const gratitudeText = document.querySelector("#gratitudeText");
 const gratitudeStatus = document.querySelector("#gratitudeStatus");
 gratitudeText.value = localStorage.getItem("emora-gratitude-entry") || "";
