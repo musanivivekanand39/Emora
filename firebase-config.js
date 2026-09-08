@@ -1,4 +1,4 @@
-// Copy values from Firebase Console > Project settings > Your apps > Web app.
+// Firebase configuration for the Emora project. This file contains the necessary credentials to connect to Firebase services such as authentication, Firestore, and storage. The configuration is used throughout the application to initialize Firebase and interact with its services.
 export const firebaseConfig = {
   apiKey: "AIzaSyCZQbLdwHwJTpg7EMECxt9gyd_ohSkihxc",
   authDomain: "emora-v3241.firebaseapp.com",
