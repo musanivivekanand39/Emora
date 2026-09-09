@@ -12,7 +12,28 @@
   <body>
     <section class="auth-screen" id="authScreen" aria-labelledby="authTitle">
       <div class="auth-card glass">
-        <div class="auth-brand"><img src="assets/emora-logo.png" alt="Emora" /><img src="assets/emora-wordmark.png" alt="Emora" /></div>
+        <aside class="auth-visual" aria-hidden="true">
+          <img src="assets/auth-wellness-sunrise.png" alt="" />
+          <div class="auth-visual-copy">
+            <span>EMORA WELLNESS</span>
+            <strong>A calmer space<br />for every day.</strong>
+            <p>Small check-ins. Meaningful support.</p>
+          </div>
+        </aside>
+        <div class="auth-content">
+        <div class="auth-brand" aria-label="Emora Mindful AI">
+          <svg class="auth-brand-mark emora-leaf" viewBox="0 0 72 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="authLeafLeft" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0878f8"/><stop offset="1" stop-color="#0753d9"/></linearGradient>
+              <linearGradient id="authLeafRight" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#278ef9"/><stop offset="1" stop-color="#65c9ff"/></linearGradient>
+            </defs>
+            <path d="M34.5 58C34 43 31 28 20 15" fill="none" stroke="#09236a" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M33 43C18 40 7 28 6 7c17 2 28 13 28 28 0 3-.3 5.5-1 8Z" fill="url(#authLeafLeft)"/>
+            <path d="M38 43c15-4 26-17 26-38-17 3-27 14-27 29 0 3 .3 6 1 9Z" fill="url(#authLeafRight)"/>
+            <path d="M35 45c-6-7-6-16 1-24 6 8 6 16-1 24Z" fill="#1262e6"/>
+          </svg>
+          <span class="auth-brand-copy"><strong>Emora</strong><small>Mindful AI</small></span>
+        </div>
         <p class="eyebrow">Your private wellness space</p>
         <h1 id="authTitle">Welcome to Emora</h1>
         <div class="auth-tabs" role="tablist"><button class="active" type="button" data-auth-tab="login">Log in</button><button type="button" data-auth-tab="signup">Create account</button></div>
@@ -30,6 +51,7 @@
           <button class="primary-button ripple" type="submit">Create account</button>
         </form>
         <p class="auth-status" id="authStatus" role="status"></p>
+        </div>
       </div>
     </section>
     <div class="app-shell">
