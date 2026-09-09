@@ -6,7 +6,7 @@
     <title>Emora Premium Wellness UI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700;6..12,800&family=Patrick+Hand&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -35,9 +35,18 @@
     <div class="app-shell">
       <aside class="sidebar glass">
         <a class="brand" href="#dashboard" aria-label="Emora dashboard">
-          <img class="brand-mark" src="assets/emora-logo.png" alt="Emora" />
+          <svg class="brand-mark emora-leaf" viewBox="0 0 72 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="leafLeft" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0878f8"/><stop offset="1" stop-color="#0753d9"/></linearGradient>
+              <linearGradient id="leafRight" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#278ef9"/><stop offset="1" stop-color="#65c9ff"/></linearGradient>
+            </defs>
+            <path d="M34.5 58C34 43 31 28 20 15" fill="none" stroke="#09236a" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M33 43C18 40 7 28 6 7c17 2 28 13 28 28 0 3-.3 5.5-1 8Z" fill="url(#leafLeft)"/>
+            <path d="M38 43c15-4 26-17 26-38-17 3-27 14-27 29 0 3 .3 6 1 9Z" fill="url(#leafRight)"/>
+            <path d="M35 45c-6-7-6-16 1-24 6 8 6 16-1 24Z" fill="#1262e6"/>
+          </svg>
           <span class="brand-copy">
-            <img class="brand-wordmark" src="assets/emora-wordmark.png" alt="Emora" />
+            <strong class="brand-wordmark">Emora</strong>
             <small>Mindful AI</small>
           </span>
         </a>
@@ -48,28 +57,31 @@
           <a class="nav-item" href="#check" data-view-link="check" data-icon="clipboard-check"><span>Health Check</span></a>
           <a class="nav-item" href="#relax" data-view-link="relax" data-icon="wind"><span>Relax</span></a>
           <a class="nav-item" href="#emergency" data-view-link="emergency" data-icon="phone-call"><span>Emergency</span></a>
-          <a class="nav-item" href="#friends" data-view-link="friends" data-icon="messages-square"><span>Friend Chat</span></a>
+          <a class="nav-item" href="#friends" data-view-link="friends" data-icon="users"><span>Friend Chat</span></a>
           <a class="nav-item" href="#analytics" data-view-link="analytics" data-icon="line-chart"><span>Analytics</span></a>
           <a class="nav-item" href="#settings" data-view-link="settings" data-icon="settings"><span>Settings</span></a>
         </nav>
 
         <div class="sidebar-card">
-          <div class="mini-signal" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <p id="dailyMessage">Your journey starts today.</p>
-          <strong id="streakCount">Day 1</strong>
+          <div class="routine-leaf" aria-hidden="true">🌿</div>
+          <p id="dailyMessage">You are building<br />a steady routine.</p>
+          <strong id="streakCount"><span aria-hidden="true">▣</span> Day 6</strong>
+          <div class="streak-dots" aria-hidden="true"><i>✓</i><i>✓</i><i>✓</i><i>✓</i><i>✓</i><i></i></div>
+          <small>Keep going! Consistency<br />creates progress.</small>
         </div>
       </aside>
 
       <main class="content">
-        <header class="topbar glass">
+        <header class="topbar">
           <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="mobileNavigation" aria-expanded="false" data-icon-button="menu"></button>
-          <div>
+          <a class="mobile-brand" href="#dashboard" data-view-link="dashboard" aria-label="Emora dashboard">
+            <svg viewBox="0 0 42 38" aria-hidden="true"><path d="M20 35C20 25 17 16 10 8" fill="none" stroke="#09236a" stroke-width="1.6"/><path d="M19 27C10 24 4 17 4 5c10 1 16 8 16 17 0 2-.3 3.5-1 5Z" fill="#0870ed"/><path d="M23 27c9-3 15-10 15-23-10 2-16 9-16 18 0 2 .3 3.5 1 5Z" fill="#54b9fb"/></svg>
+            <span><strong>Emora</strong><small>Mindful AI</small></span>
+          </a>
+          <div class="topbar-welcome">
             <p class="eyebrow" id="currentDate">Loading date…</p>
-            <h1 id="welcomeTitle">Welcome<br /><span>to Emora</span></h1>
+            <h1 id="welcomeTitle">Welcome Vivek <span class="wave">👋</span></h1>
+            <p class="dashboard-motto">“Small steps, brighter days”</p>
           </div>
           <div class="nav-streak" aria-label="Current streak">
             <span aria-hidden="true">🔥</span>
@@ -77,9 +89,12 @@
             <small>day streak</small>
           </div>
           <div class="top-actions">
+            <label class="desktop-search"><span data-icon-button="search"></span><input type="search" placeholder="Search anything..." aria-label="Search" /></label>
+            <button class="notification-button" type="button" aria-label="Notifications" data-icon-button="bell"><i></i></button>
             <button class="profile-button" type="button">
-              <span id="profileInitials">E</span>
-              <strong>Pro</strong>
+              <span id="profileInitials">V</span>
+              <strong>Vivek</strong>
+              <svg class="profile-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m5.5 7.5 4.5 4.5 4.5-4.5" /></svg>
             </button>
           </div>
         </header>
@@ -93,7 +108,7 @@
         <a href="#check" data-view-link="check" aria-label="Health Check" data-mobile-icon="clipboard-check"></a>
         <a href="#relax" data-view-link="relax" aria-label="Relax" data-mobile-icon="wind"></a>
         <a href="#emergency" data-view-link="emergency" aria-label="Emergency" data-mobile-icon="phone-call"></a>
-        <a href="#friends" data-view-link="friends" aria-label="Friends" data-mobile-icon="messages-square"></a>
+        <a href="#friends" data-view-link="friends" aria-label="Friend Chat" data-mobile-icon="users"></a>
         <a href="#analytics" data-view-link="analytics" aria-label="Analytics" data-mobile-icon="line-chart"></a>
         <a href="#settings" data-view-link="settings" aria-label="Settings" data-mobile-icon="settings"></a>
       </nav>

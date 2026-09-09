@@ -21,7 +21,11 @@ const icons = {
   sparkles: '<path d="m12 3-1.9 5.4L5 10.5l5.1 2.1L12 18l1.9-5.4 5.1-2.1-5.1-2.1Z"/><path d="M5 3v4"/><path d="M3 5h4"/><path d="M19 17v4"/><path d="M17 19h4"/>',
   "heart-pulse": '<path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 0 1 12 6a5 5 0 0 1 7.5 6.6Z"/><path d="M3 12h4l2-3 3 6 2-3h7"/>',
   brain: '<path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v.2A3.5 3.5 0 0 0 5.4 11 3.5 3.5 0 0 0 7 17.3v.2A2.5 2.5 0 0 0 11.5 19V2Z"/><path d="M14.5 2A2.5 2.5 0 0 1 17 4.5v.2A3.5 3.5 0 0 1 18.6 11a3.5 3.5 0 0 1-1.6 6.3v.2A2.5 2.5 0 0 1 12.5 19V2Z"/>',
-  activity: '<path d="M22 12h-4l-3 8-6-16-3 8H2"/>'
+  activity: '<path d="M22 12h-4l-3 8-6-16-3 8H2"/>',
+  "trending-up": '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v8"/><path d="M9 12h6"/>'
 };
 
 const svg = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.sparkles}</svg>`;
@@ -116,16 +120,16 @@ const themeToggle = document.querySelector("#themeToggle");
 const savedTheme = localStorage.getItem("emora-theme");
 if (savedTheme === "light") {
   document.documentElement.classList.add("light");
-  themeToggle.checked = true;
+  if (themeToggle) themeToggle.checked = true;
 }
 
-themeToggle.addEventListener("change", () => {
+themeToggle?.addEventListener("change", () => {
   document.documentElement.classList.toggle("light", themeToggle.checked);
   localStorage.setItem("emora-theme", themeToggle.checked ? "light" : "dark");
   drawCharts();
 });
 
-document.querySelector("#motionToggle").addEventListener("change", (event) => {
+document.querySelector("#motionToggle")?.addEventListener("change", (event) => {
   document.body.classList.toggle("reduced-motion", event.target.checked);
 });
 
@@ -1043,12 +1047,14 @@ function drawLineChart(canvas, series, labels) {
   const ratio = window.devicePixelRatio || 1;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
+  if (width < 2 || height < 2) return;
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.clearRect(0, 0, width, height);
 
-  const pad = { top: 22, right: 18, bottom: 34, left: 34 };
+  const compact = width < 240;
+  const pad = compact ? { top: 8, right: 5, bottom: 14, left: 5 } : { top: 22, right: 18, bottom: 34, left: 34 };
   const chartW = width - pad.left - pad.right;
   const chartH = height - pad.top - pad.bottom;
   const grid = "rgba(148, 163, 184, 0.16)";
@@ -1064,11 +1070,11 @@ function drawLineChart(canvas, series, labels) {
     ctx.stroke();
   }
 
-  ctx.font = "600 11px Poppins, sans-serif";
+  ctx.font = `600 ${compact ? 6 : 11}px Nunito Sans, sans-serif`;
   ctx.fillStyle = text;
   labels.forEach((label, index) => {
     const x = pad.left + (chartW / (labels.length - 1)) * index;
-    ctx.fillText(label, x - 10, height - 12);
+    ctx.fillText(label, x - (compact ? 5 : 10), height - (compact ? 5 : 12));
   });
 
   series.forEach((line) => {
@@ -1084,7 +1090,7 @@ function drawLineChart(canvas, series, labels) {
       else ctx.lineTo(x, y);
     });
     ctx.strokeStyle = gradient;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = compact ? 1.5 : 3;
     ctx.shadowColor = line.color;
     ctx.shadowBlur = 14;
     ctx.stroke();
@@ -1094,7 +1100,7 @@ function drawLineChart(canvas, series, labels) {
       const x = pad.left + (chartW / (line.values.length - 1)) * index;
       const y = pad.top + chartH - (value / 100) * chartH;
       ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.arc(x, y, compact ? 2 : 4, 0, Math.PI * 2);
       ctx.fillStyle = line.color;
       ctx.fill();
     });
@@ -1107,35 +1113,42 @@ function drawBarChart(canvas, values, labels) {
   const ratio = window.devicePixelRatio || 1;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
+  if (width < 2 || height < 2 || !values.length) return;
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.clearRect(0, 0, width, height);
 
-  const pad = 30;
-  const barW = (width - pad * 2) / values.length - 12;
-  const maxH = height - 64;
-  ctx.font = "600 11px Poppins, sans-serif";
+  const compact = width < 240;
+  const pad = compact ? 6 : 30;
+  const availableWidth = Math.max(values.length, width - pad * 2);
+  const preferredGap = compact ? 5 : 12;
+  const gap = Math.max(0, Math.min(preferredGap, (availableWidth - values.length) / Math.max(1, values.length - 1)));
+  const barW = Math.max(1, (availableWidth - gap * (values.length - 1)) / values.length);
+  const maxH = Math.max(1, height - (compact ? 19 : 64));
+  ctx.font = `600 ${compact ? 6 : 11}px Nunito Sans, sans-serif`;
   values.forEach((value, index) => {
-    const x = pad + index * (barW + 12);
-    const h = (value / 100) * maxH;
-    const y = height - 34 - h;
+    const x = pad + index * (barW + gap);
+    const h = Math.max(1, (Math.max(0, Number(value) || 0) / 100) * maxH);
+    const y = height - (compact ? 12 : 34) - h;
     const gradient = ctx.createLinearGradient(0, y, 0, height);
-    gradient.addColorStop(0, index % 2 ? cssVar("--teal") : cssVar("--primary"));
-    gradient.addColorStop(1, "rgba(155, 140, 255, 0.22)");
-    roundRect(ctx, x, y, barW, h, 12);
+    const dashboardBars = canvas.id === "weeklyChart";
+    gradient.addColorStop(0, dashboardBars ? (index === values.length - 1 ? "#287af5" : "#a8c9ff") : (index % 2 ? cssVar("--teal") : cssVar("--primary")));
+    gradient.addColorStop(1, dashboardBars ? "#dceaff" : "rgba(155, 140, 255, 0.22)");
+    roundRect(ctx, x, y, barW, h, compact ? 2 : 12);
     ctx.fillStyle = gradient;
-    ctx.shadowColor = index % 2 ? cssVar("--teal") : cssVar("--primary");
+    ctx.shadowColor = dashboardBars ? "rgba(31,111,241,.12)" : (index % 2 ? cssVar("--teal") : cssVar("--primary"));
     ctx.shadowBlur = 12;
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.fillStyle = cssVar("--muted");
-    ctx.fillText(labels[index], x + 5, height - 12);
+    ctx.fillText(labels[index], x, height - (compact ? 5 : 12));
   });
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
-  const r = Math.min(radius, width / 2, height / 2);
+  if (![x, y, width, height, radius].every(Number.isFinite) || width <= 0 || height <= 0) return;
+  const r = Math.max(0, Math.min(radius, width / 2, height / 2));
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.arcTo(x + width, y, x + width, y + height, r);
@@ -1146,15 +1159,8 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 function drawCharts() {
-  drawLineChart(
-    document.querySelector("#weeklyChart"),
-    [
-      { values: [58, 66, 62, 74, 70, 83, 88], color: cssVar("--primary"), colorEnd: cssVar("--teal") },
-      { values: [42, 48, 44, 52, 47, 38, 31], color: cssVar("--warning"), colorEnd: "#ec4899" }
-    ],
-    ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-  );
-  drawBarChart(document.querySelector("#energyChart"), [54, 72, 61, 86, 74, 68], ["8", "10", "12", "2", "4", "6"]);
+  drawBarChart(document.querySelector("#weeklyChart"), [55, 44, 58, 74, 64, 79, 92], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+  drawLineChart(document.querySelector("#energyChart"), [{ values: [32, 68, 48, 85, 38, 64, 96], color: "#159af2", colorEnd: "#159af2" }], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
   drawLineChart(
     document.querySelector("#monthlyChart"),
     [
@@ -1239,11 +1245,6 @@ async function requestChatReply(text, stream) {
 
 const profileForm = document.querySelector("#profileForm");
 const profileData = JSON.parse(localStorage.getItem("emora-profile") || "{}");
-if (/^aanya\b/i.test(profileData.profileName || "")) {
-  profileData.profileName = "Bhanu";
-  if (/aanya/i.test(profileData.profileEmail || "")) profileData.profileEmail = "";
-  localStorage.setItem("emora-profile", JSON.stringify(profileData));
-}
 const profileFields = ["profileAge", "profileGender", "profileLanguage"];
 profileFields.forEach((id) => {
   const field = document.querySelector(`#${id}`);
@@ -1252,10 +1253,6 @@ profileFields.forEach((id) => {
 
 function renderProfile() {
   const data = JSON.parse(localStorage.getItem("emora-profile") || "{}");
-  const name = data.profileName || "Bhanu";
-  document.querySelector("#profileNameDisplay").textContent = name;
-  document.querySelector("#profileEmailDisplay").textContent = data.profileEmail || "Add your email address";
-  document.querySelector("#profileAvatar").textContent = name.charAt(0).toUpperCase();
   document.querySelector("#profileAgeDisplay").textContent = data.profileAge || "—";
   document.querySelector("#profileGenderDisplay").textContent = data.profileGender || "Prefer not to say";
   document.querySelector("#profileLanguageDisplay").textContent = data.profileLanguage || "English";

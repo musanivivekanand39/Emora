@@ -29,8 +29,13 @@ function updateUserUi(user) {
   const welcome = document.querySelector("#welcomeTitle");
   if (welcome) {
     const nameLine = document.createElement("span");
+    nameLine.className = "user-name";
     nameLine.textContent = name;
-    welcome.replaceChildren("Welcome", document.createElement("br"), nameLine);
+    const wave = document.createElement("span");
+    wave.className = "wave";
+    wave.setAttribute("aria-hidden", "true");
+    wave.textContent = "👋";
+    welcome.replaceChildren("Welcome", document.createElement("br"), nameLine, wave);
   }
   const avatar = document.querySelector("#profileInitials");
   if (avatar) avatar.textContent = initials;

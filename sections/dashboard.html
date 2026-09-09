@@ -1,45 +1,34 @@
 <section class="view active" id="dashboard" data-view="dashboard">
-          <div class="dashboard-grid">
+          <div class="dashboard-grid reference-dashboard">
             <article class="welcome-card glass gradient-border">
-              <div>
-                <p class="eyebrow">AI wellness summary</p>
+              <div class="hero-copy">
+                <p class="eyebrow"><span aria-hidden="true">✦</span> AI wellness summary</p>
                 <h2>Your emotional rhythm is calmer than last week.</h2>
                 <p>Emora noticed fewer late-night stress spikes and more consistent recovery after focused work blocks.</p>
                 <div class="welcome-actions">
-                  <button class="primary-button ripple" type="button">Start reflection</button>
+                  <button class="primary-button ripple" type="button">Start reflection <span>→</span></button>
                   <button class="secondary-button ripple" type="button">View insights</button>
                 </div>
               </div>
-              <div class="wellness-illustration" aria-label="Calm wellness illustration" role="img">
-                <div class="moon"></div>
-                <div class="pulse-card">
-                  <span></span>
-                  <strong>82</strong>
-                  <small>Mood score</small>
-                </div>
-                <div class="leaf left"></div>
-                <div class="leaf right"></div>
-              </div>
+              <p class="hero-note">A calmer mind<br />brighter tomorrow</p>
             </article>
 
-            <article class="stat-card glass">
+            <article class="stat-card glass mood-card">
               <div class="card-head">
-                <span class="icon-chip teal" data-inline-icon="sparkles"></span>
-                <small>AI summary</small>
+                <div><span class="icon-chip blue" data-inline-icon="smile"></span><strong>Mood score</strong></div>
+                <b>⋮</b>
+              </div>
+              <div class="score-ring" style="--score: 82"><strong>82</strong><small>/ 100</small></div>
+              <p><strong>↗ +12%</strong><span>from your previous<br />weekly average.</span></p>
+            </article>
+
+            <article class="stat-card glass summary-card">
+              <div class="card-head">
+                <div><span class="icon-chip blue" data-inline-icon="brain"></span><strong>AI summary</strong></div>
               </div>
               <h3>Balanced</h3>
               <p>Most messages indicate grounded optimism with mild afternoon fatigue.</p>
-            </article>
-
-            <article class="stat-card glass">
-              <div class="card-head">
-                <span class="icon-chip purple" data-inline-icon="heart-pulse"></span>
-                <small>Mood score</small>
-              </div>
-              <div class="score-ring" style="--score: 82">
-                <strong>82</strong>
-              </div>
-              <p>+12% from your previous weekly average.</p>
+              <div class="balance-face"><span>•‿•</span><small>Balanced</small></div>
             </article>
 
             <article class="chart-card glass weekly-card">
@@ -50,7 +39,7 @@
                 </div>
                 <span class="trend-pill">+18%</span>
               </div>
-              <canvas id="weeklyChart" width="700" height="280" aria-label="Weekly emotional progress chart"></canvas>
+              <canvas id="weeklyChart" width="700" height="180" aria-label="Weekly emotional progress chart"></canvas>
             </article>
 
             <article class="chart-card glass">
@@ -61,26 +50,27 @@
                 </div>
                 <button class="tiny-button" type="button">Week</button>
               </div>
-              <canvas id="energyChart" width="420" height="280" aria-label="Daily energy chart"></canvas>
+              <canvas id="energyChart" width="420" height="180" aria-label="Daily energy chart"></canvas>
             </article>
 
             <article class="insight-list glass">
               <div class="section-title">
                 <div>
-                  <p class="eyebrow">Analytics</p>
+                  <p class="eyebrow"><span class="analytics-mark" data-inline-icon="activity"></span> Analytics</p>
                   <h3>Signals to notice</h3>
                 </div>
+                <a class="all-insights" href="#analytics" data-view-link="analytics">View all insights <span>→</span></a>
               </div>
-              <div class="insight-row">
-                <span class="dot teal"></span>
+              <div class="insight-row green">
+                <span class="insight-icon" data-inline-icon="trending-up"></span>
                 <div><strong>Recovery improved</strong><small>Short walks after study sessions helped.</small></div>
               </div>
-              <div class="insight-row">
-                <span class="dot orange"></span>
+              <div class="insight-row orange">
+                <span class="insight-icon" data-inline-icon="clock"></span>
                 <div><strong>Pressure window</strong><small>Stress peaks between 3 PM and 5 PM.</small></div>
               </div>
-              <div class="insight-row">
-                <span class="dot pink"></span>
+              <div class="insight-row purple">
+                <span class="insight-icon" data-inline-icon="users"></span>
                 <div><strong>Social lift</strong><small>Friend chats raised mood by 9 points.</small></div>
               </div>
             </article>

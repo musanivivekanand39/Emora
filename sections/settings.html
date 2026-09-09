@@ -3,14 +3,15 @@
             <article class="settings-card glass profile-card">
               <div class="section-title">
                 <div>
-                  <p class="eyebrow">Profile</p>
+                  <p class="eyebrow"><span data-inline-icon="users"></span> Profile</p>
                   <h2>Make Emora fit your routine</h2>
                 </div>
                 <button class="tiny-button" id="editProfile" type="button">Edit</button>
               </div>
               <div class="profile-summary">
-                <span class="profile-avatar" id="profileAvatar">B</span>
-                <div><strong id="profileNameDisplay">Bhanu</strong><small id="profileEmailDisplay">Add your email address</small><em id="memberSince">Member since August 2026</em></div>
+                <span class="profile-avatar" id="profileAvatar">M</span>
+                <div><strong id="profileNameDisplay">Member</strong><small id="profileEmailDisplay">Add your email address</small><em id="memberSince">Member since August 2026</em></div>
+                <p class="profile-message">A healthier, happier you<br />— one day at a time.</p>
               </div>
               <form class="profile-form" id="profileForm" hidden>
                 <label class="floating-field"><input id="profileAge" type="number" min="13" max="120" placeholder=" " /><span>Age</span></label>
@@ -33,49 +34,23 @@
             </article>
 
             <article class="settings-card glass notification-card">
-              <div class="section-title"><div><p class="eyebrow">Notifications</p><h2>Gentle reminders</h2></div></div>
+              <div class="section-title"><div><p class="eyebrow">🔔 Notifications</p><h2>Gentle reminders</h2><small>Small nudges for a better you</small></div><button class="settings-see-all" type="button">See all</button></div>
               <div class="setting-row"><div><strong>Morning mood check</strong><small>08:00</small></div><label class="switch"><input class="notification-toggle" data-reminder="morning" type="checkbox" /><span></span></label></div>
               <div class="setting-row"><div><strong>Drink water</strong><small>Every 2 hours</small></div><label class="switch"><input class="notification-toggle" data-reminder="water" type="checkbox" /><span></span></label></div>
               <div class="setting-row"><div><strong>Meditation reminder</strong><small>18:30</small></div><label class="switch"><input class="notification-toggle" data-reminder="meditation" type="checkbox" /><span></span></label></div>
               <div class="setting-row"><div><strong>Sleep reminder</strong><small>22:30</small></div><label class="switch"><input class="notification-toggle" data-reminder="sleep" type="checkbox" /><span></span></label></div>
               <div class="setting-row"><div><strong>Positive quote</strong><small>12:00</small></div><label class="switch"><input class="notification-toggle" data-reminder="quote" type="checkbox" /><span></span></label></div>
-              <button class="reports-link" type="button" id="openReports">My reports <span>â€º</span></button>
+              <button class="reports-link reminder-quote" type="button" id="openReports">❝ “A positive mind finds opportunity in everything.” <span>↻</span></button>
             </article>
 
-            <article class="settings-card glass">
-              <div class="section-title">
-                <div>
-                  <p class="eyebrow">Preferences</p>
-                  <h2>Theme</h2>
-                </div>
-              </div>
-              <div class="setting-row">
-                <div>
-                  <strong>Light theme</strong>
-                  <small>Smoothly switch to a bright, low-glare interface.</small>
-                </div>
-                <label class="switch">
-                  <input id="themeToggle" type="checkbox" />
-                  <span></span>
-                </label>
-              </div>
-              <div class="setting-row">
-                <div>
-                  <strong>Reduced motion</strong>
-                  <small>Respect motion-sensitive sessions.</small>
-                </div>
-                <label class="switch">
-                  <input id="motionToggle" type="checkbox" />
-                  <span></span>
-                </label>
-              </div>
-            </article>
             <article class="settings-card glass privacy-card">
               <div class="section-title">
                 <div>
-                  <p class="eyebrow">Privacy</p>
+                  <p class="eyebrow"><span data-inline-icon="shield"></span> Privacy</p>
                   <h2>Your data, your control</h2>
+                  <small>Manage your data and privacy preferences.</small>
                 </div>
+                <div class="privacy-badge"><span>♙</span><div><strong>Your privacy matters</strong><small>We keep your data safe and secure.</small></div></div>
               </div>
               <div class="setting-row">
                 <div><strong>Friend chat analysis</strong><small>Only analyse chats you explicitly select.</small></div>
