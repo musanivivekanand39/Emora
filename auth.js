@@ -22,9 +22,10 @@ function selectAuthTab(tab) {
   loginForm.hidden = !login; signupForm.hidden = login;
   document.querySelectorAll("[data-auth-tab]").forEach((button) => button.classList.toggle("active", button.dataset.authTab === tab));
 }
-function updateUserUi(user) {
+function updateUserUi(user, userData = {}) {
   if (!user) return;
-  const name = user.displayName || "Member";
+  const emailName = String(user.email || "").split("@")[0];
+  const name = String(userData.name || user.displayName || userData.username || emailName || "Member").trim();
   const initials = name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   const welcome = document.querySelector("#welcomeTitle");
   if (welcome) {
@@ -39,6 +40,8 @@ function updateUserUi(user) {
   }
   const avatar = document.querySelector("#profileInitials");
   if (avatar) avatar.textContent = initials;
+  const topbarName = document.querySelector("#topbarProfileName");
+  if (topbarName) topbarName.textContent = name;
   const profileAvatar = document.querySelector("#profileAvatar");
   if (profileAvatar) profileAvatar.textContent = initials.charAt(0);
   const profileName = document.querySelector("#profileNameDisplay");
@@ -113,8 +116,8 @@ async function showApp(user) {
     setAuthHistory(false);
     return;
   }
-  updateUserUi(user);
   const userData = await loadUserData(user);
+  updateUserUi(user, userData);
   await updateUserStreak(user, userData);
   setAuthHistory(true);
   window.emoraSetView?.("dashboard", { history: "replace" });
@@ -124,6 +127,16 @@ const signupError = "Unable to create account. Please try again.";
 async function saveUserData(user, data) { if (db && user) await setDoc(doc(db, "users", user.uid), { ...data, updatedAt: serverTimestamp() }, { merge: true }); }
 
 document.querySelectorAll("[data-auth-tab]").forEach((button) => button.addEventListener("click", () => { selectAuthTab(button.dataset.authTab); showStatus(""); }));
+document.querySelectorAll(".password-toggle").forEach((button) => {
+  button.addEventListener("click", () => {
+    const input = button.closest(".password-field")?.querySelector("input");
+    if (!input) return;
+    const showPassword = input.type === "password";
+    input.type = showPassword ? "text" : "password";
+    button.setAttribute("aria-pressed", String(showPassword));
+    button.setAttribute("aria-label", showPassword ? "Hide password" : "Show password");
+  });
+});
 
 if (!isFirebaseConfigured) {
   document.body.classList.add("auth-ready");

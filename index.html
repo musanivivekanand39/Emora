@@ -39,7 +39,7 @@
         <div class="auth-tabs" role="tablist"><button class="active" type="button" data-auth-tab="login">Log in</button><button type="button" data-auth-tab="signup">Create account</button></div>
         <form class="auth-form" id="loginForm" autocomplete="off">
           <label><span>Email address</span><input name="email" type="email" autocomplete="off" required /></label>
-          <label><span>Password</span><input name="password" type="password" autocomplete="new-password" required /></label>
+          <label><span>Password</span><span class="password-field"><input name="password" type="password" autocomplete="current-password" required /><button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg></button></span></label>
           <button class="primary-button ripple" type="submit">Log in</button>
           <button class="auth-link" id="forgotPasswordButton" type="button">Forgot password?</button>
         </form>
@@ -47,7 +47,7 @@
           <label><span>Username</span><input name="username" type="text" autocomplete="username" required /></label>
           <label><span>Display name</span><input name="displayName" type="text" autocomplete="name" required /></label>
           <label><span>Email address</span><input name="email" type="email" autocomplete="email" required /></label>
-          <label><span>Password</span><input name="password" type="password" minlength="6" autocomplete="new-password" required /></label>
+          <label><span>Password</span><span class="password-field"><input name="password" type="password" minlength="6" autocomplete="new-password" required /><button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg></button></span></label>
           <button class="primary-button ripple" type="submit">Create account</button>
         </form>
         <p class="auth-status" id="authStatus" role="status"></p>
@@ -102,7 +102,7 @@
           </a>
           <div class="topbar-welcome">
             <p class="eyebrow" id="currentDate">Loading date…</p>
-            <h1 id="welcomeTitle">Welcome Vivek <span class="wave">👋</span></h1>
+            <h1 id="welcomeTitle">Welcome Member <span class="wave">👋</span></h1>
             <p class="dashboard-motto">“Small steps, brighter days”</p>
           </div>
           <div class="nav-streak" aria-label="Current streak">
@@ -114,8 +114,8 @@
             <label class="desktop-search"><span data-icon-button="search"></span><input type="search" placeholder="Search anything..." aria-label="Search" /></label>
             <button class="notification-button" type="button" aria-label="Notifications" data-icon-button="bell"><i></i></button>
             <button class="profile-button" type="button">
-              <span id="profileInitials">V</span>
-              <strong>Vivek</strong>
+              <span id="profileInitials">M</span>
+              <strong id="topbarProfileName">Member</strong>
               <svg class="profile-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m5.5 7.5 4.5 4.5 4.5-4.5" /></svg>
             </button>
           </div>
