@@ -1159,13 +1159,13 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 function drawCharts() {
-  drawBarChart(document.querySelector("#weeklyChart"), [55, 44, 58, 74, 64, 79, 92], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
-  drawLineChart(document.querySelector("#energyChart"), [{ values: [32, 68, 48, 85, 38, 64, 96], color: "#159af2", colorEnd: "#159af2" }], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+  drawBarChart(document.querySelector("#weeklyChart"), [0, 0, 0, 0, 0, 0, 0], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+  drawLineChart(document.querySelector("#energyChart"), [{ values: [0, 0, 0, 0, 0, 0, 0], color: "#159af2", colorEnd: "#159af2" }], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
   drawLineChart(
     document.querySelector("#monthlyChart"),
     [
-      { values: [62, 65, 71, 68, 76, 82, 84, 79], color: cssVar("--teal"), colorEnd: cssVar("--primary-2") },
-      { values: [38, 35, 31, 36, 30, 27, 25, 29], color: cssVar("--pink"), colorEnd: cssVar("--warning") }
+      { values: [0, 0, 0, 0, 0, 0, 0, 0], color: cssVar("--teal"), colorEnd: cssVar("--primary-2") },
+      { values: [0, 0, 0, 0, 0, 0, 0, 0], color: cssVar("--pink"), colorEnd: cssVar("--warning") }
     ],
     ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
   );

@@ -252,13 +252,17 @@ button {
 }
 
 .sidebar {
-  position: sticky;
+  position: fixed;
   top: var(--space-16);
+  bottom: var(--space-16);
+  left: var(--space-16);
   display: flex;
+  width: 280px;
   flex-direction: column;
-  height: calc(100vh - 36px);
+  height: auto;
   padding: 20px;
   border-radius: var(--app-radius-lg);
+  overflow-y: auto;
 }
 
 .brand {
@@ -451,6 +455,7 @@ button {
 }
 
 .content {
+  grid-column: 2;
   min-width: 0;
   padding-bottom: 22px;
 }
@@ -1003,7 +1008,13 @@ canvas {
 .chat-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  min-height: calc(100vh - 142px);
+  height: calc(100dvh - 142px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+body.authenticated:has(#chat.active) {
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -1011,11 +1022,14 @@ canvas {
 .friend-chat {
   display: flex;
   min-width: 0;
+  min-height: 0;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .chat-header {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
@@ -1032,6 +1046,7 @@ canvas {
   gap: 14px;
   padding: 22px;
   overflow: auto;
+  overscroll-behavior: contain;
   background:
     linear-gradient(145deg, rgba(124, 92, 255, 0.08), transparent 44%),
     linear-gradient(315deg, rgba(61, 217, 197, 0.06), transparent 44%);
@@ -1126,6 +1141,7 @@ canvas {
 
 .composer {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 10px;
   margin: 0 18px 18px;
@@ -1877,6 +1893,9 @@ body::before { display: none; }
 
   .sidebar {
     top: 0;
+    bottom: 0;
+    left: 0;
+    width: 263px;
     height: 100vh;
     padding: 27px 15px 18px;
     border: 0;
@@ -1931,6 +1950,7 @@ body::before { display: none; }
   .profile-chevron { width: 18px; height: 18px; margin-left: 5px; fill: none; stroke: #071b58; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
   .view { padding-top: 0; }
+  #chat .chat-layout { height: calc(100dvh - 226px); }
   .reference-dashboard { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 17px; }
   .glass { border: 1px solid #dce6f3; background: rgba(255,255,255,.9); box-shadow: 0 6px 22px rgba(40,86,150,.055); backdrop-filter: blur(10px); }
   .welcome-card { grid-column: span 9; position: relative; display: block; min-height: 313px; padding: 23px 26px; overflow: hidden; border-radius: 14px; background-image: linear-gradient(90deg, rgba(238,247,255,.99) 0%, rgba(233,244,255,.9) 34%, rgba(220,234,252,.18) 62%), url("assets/Ai willness summary image.png"); background-position: center, center 59%; background-size: cover; }
@@ -3163,6 +3183,7 @@ body::before { display: none; }
   }
 
   .sidebar {
+    width: 94px;
     align-items: center;
     padding: 16px 12px;
   }
@@ -3282,6 +3303,11 @@ body::before { display: none; }
   .coming-soon {
     grid-template-columns: 1fr;
     min-height: calc(100vh - 202px);
+  }
+
+  .chat-layout {
+    height: calc(100dvh - 202px);
+    min-height: 0;
   }
 
   .check-hero,
