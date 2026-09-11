@@ -68,7 +68,8 @@ function renderStreak(streak) {
   const streakDots = document.querySelector(".streak-dots");
   if (streakDots) {
     const ticks = document.createDocumentFragment();
-    for (let day = 0; day < count; day += 1) {
+    const visibleTickCount = Math.min(count, 7);
+    for (let day = 0; day < visibleTickCount; day += 1) {
       const tick = document.createElement("i");
       tick.textContent = "✓";
       ticks.append(tick);
