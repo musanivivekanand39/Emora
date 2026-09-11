@@ -1905,9 +1905,8 @@ body::before { display: none; }
   .sidebar-card strong { display: block; color: #10255f; font-size: 1rem; }
   .sidebar-card strong span { margin-right: 10px; font-size: 1.3rem; }
   #streakCount::before { margin-right: 11px; content: "▣"; font-size: 1.25rem; }
-  .streak-dots { display: flex; gap: 10px; margin: 13px 0; }
+  .streak-dots { display: flex; flex-wrap: wrap; gap: 10px; margin: 13px 0; }
   .streak-dots i { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 50%; background: #1a6dec; color: white; font-size: .7rem; font-style: normal; }
-  .streak-dots i:last-child { border: 1px solid #6483c5; background: transparent; }
   .sidebar-card > small { color: #486194; font-size: .76rem; line-height: 1.5; }
 
   .content { padding: 0 24px 24px 28px; }

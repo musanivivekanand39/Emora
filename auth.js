@@ -65,6 +65,16 @@ function renderStreak(streak) {
   const message = count === 1 ? "Your journey starts today." : "You are building a steady routine.";
   document.querySelector("#dailyMessage")?.replaceChildren(document.createTextNode(message));
   document.querySelector("#streakCount")?.replaceChildren(document.createTextNode(`Day ${count}`));
+  const streakDots = document.querySelector(".streak-dots");
+  if (streakDots) {
+    const ticks = document.createDocumentFragment();
+    for (let day = 0; day < count; day += 1) {
+      const tick = document.createElement("i");
+      tick.textContent = "✓";
+      ticks.append(tick);
+    }
+    streakDots.replaceChildren(ticks);
+  }
   document.querySelectorAll("[data-nav-streak-count]").forEach((element) => {
     element.replaceChildren(document.createTextNode(String(count)));
   });
