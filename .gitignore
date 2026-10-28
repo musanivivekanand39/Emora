@@ -1,5 +1,8 @@
 node_modules/
+www/
 .vercel/
 .env
 .env.*
 !.env.example
+desktop.ini
+.vscode/

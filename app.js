@@ -25,7 +25,9 @@ const icons = {
   "trending-up": '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v8"/><path d="M9 12h6"/>'
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v8"/><path d="M9 12h6"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  'user-plus': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>'
 };
 
 const svg = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.sparkles}</svg>`;
@@ -1313,4 +1315,589 @@ renderProfile();
 
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+}
+
+/* ==========================================================================
+   Friend Requests & WhatsApp-Style Live Chat Logic (Emora Light Wellness UI)
+   ========================================================================== */
+
+function initFriendsSection() {
+  const friendsSection = document.querySelector("#friends");
+  if (!friendsSection) return;
+
+  const shell = document.querySelector("#whatsappShell");
+  const tabs = friendsSection.querySelectorAll(".whatsapp-tab[data-friends-tab]");
+  const panels = friendsSection.querySelectorAll(".whatsapp-panel[data-friends-panel]");
+  const subTabs = friendsSection.querySelectorAll("[data-requests-tab]");
+  const subPanels = friendsSection.querySelectorAll("[data-requests-panel]");
+  const badge = document.querySelector("#requestsBadge");
+
+  const searchInput = document.querySelector("#friendSearchInput");
+  const searchBtn = document.querySelector("#friendSearchBtn");
+  const searchResults = document.querySelector("#friendSearchResults");
+  const receivedList = document.querySelector("#receivedRequests");
+  const sentList = document.querySelector("#sentRequests");
+  const friendsList = document.querySelector("#friendsListContent");
+
+  const chatPlaceholder = document.querySelector("#chatPlaceholder");
+  const activeChatRoom = document.querySelector("#activeChatRoom");
+  const chatBackBtn = document.querySelector("#friendChatBackBtn");
+  const chatAvatar = document.querySelector("#friendChatAvatar");
+  const chatRecipientName = document.querySelector("#friendChatRecipientName");
+  const chatRecipientEmail = document.querySelector("#friendChatRecipientEmail");
+  const chatMessagesContainer = document.querySelector("#friendChatMessages");
+  const chatForm = document.querySelector("#friendChatForm");
+  const chatInput = document.querySelector("#friendChatMessageInput");
+  const chatSendBtn = document.querySelector("#friendChatSendBtn");
+  const emojiBtn = document.querySelector("#chatEmojiBtn");
+  const sidebarUserAvatar = document.querySelector("#sidebarUserAvatar");
+
+  let lastSearchQuery = "";
+  let currentActiveConvoId = null;
+  let chatUnsubscribe = null;
+
+  function updateSidebarUser() {
+    const user = window.emoraAuth?.currentUser;
+    if (sidebarUserAvatar && user) {
+      const name = user.displayName || user.email || "M";
+      sidebarUserAvatar.textContent = name.charAt(0).toUpperCase();
+    }
+  }
+
+  function switchTab(tabName) {
+    tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.friendsTab === tabName));
+    panels.forEach((panel) => panel.classList.toggle("active", panel.dataset.friendsPanel === tabName));
+    if (tabName === "requests") {
+      loadRequests();
+    } else if (tabName === "list") {
+      loadFriends();
+    }
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => switchTab(tab.dataset.friendsTab));
+  });
+
+  function switchSubTab(subTabName) {
+    subTabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.requestsTab === subTabName));
+    subPanels.forEach((panel) => {
+      const isTarget = panel.dataset.requestsPanel === subTabName;
+      panel.hidden = !isTarget;
+    });
+  }
+
+  subTabs.forEach((tab) => {
+    tab.addEventListener("click", () => switchSubTab(tab.dataset.requestsTab));
+  });
+
+  async function updateBadgeCount() {
+    if (!window.emoraFriends?.getReceivedFriendRequests) return;
+    try {
+      const received = await window.emoraFriends.getReceivedFriendRequests();
+      const count = received.length;
+      if (badge) {
+        badge.textContent = count;
+        badge.hidden = count === 0;
+      }
+    } catch (_err) {
+      // Ignore if unauthenticated
+    }
+  }
+
+  // --- Search Users by Email ---
+  async function performSearch() {
+    if (!searchInput) return;
+    const query = searchInput.value.trim();
+    if (!query) {
+      searchResults.innerHTML = `
+        <div class="friends-empty-state">
+          <div class="friends-empty-icon"><span class="icon-chip purple" data-inline-icon="search"></span></div>
+          <h3>Find your friends</h3>
+          <p>Please enter an email address to search.</p>
+        </div>
+      `;
+      applyInlineIcons(searchResults);
+      return;
+    }
+
+    lastSearchQuery = query;
+    searchResults.innerHTML = `
+      <div class="friends-empty-state">
+        <p>Searching for users with "${escapeHtml(query)}"...</p>
+      </div>
+    `;
+
+    try {
+      const results = await window.emoraFriends.searchUsersByEmail(query);
+      if (results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="friends-empty-state">
+            <div class="friends-empty-icon"><span class="icon-chip purple" data-inline-icon="search"></span></div>
+            <h3>No users found</h3>
+            <p>No registered user found matching "${escapeHtml(query)}".</p>
+          </div>
+        `;
+        applyInlineIcons(searchResults);
+        return;
+      }
+
+      searchResults.innerHTML = results.map((user) => {
+        const initial = escapeHtml((user.name || user.email || "M").charAt(0).toUpperCase());
+        let actionMarkup = "";
+        if (user.relationship === "friends") {
+          actionMarkup = '<span class="friend-status-pill friends">Friends</span>';
+        } else if (user.relationship === "pending_sent") {
+          actionMarkup = `
+            <span class="friend-status-pill pending">Request Sent</span>
+            <button class="friend-action-btn cancel" type="button" data-cancel-id="${user.pendingRequestId}">Cancel</button>
+          `;
+        } else if (user.relationship === "pending_received") {
+          actionMarkup = `
+            <button class="friend-action-btn accept" type="button" data-accept-id="${user.pendingRequestId}">Accept</button>
+            <button class="friend-action-btn reject" type="button" data-reject-id="${user.pendingRequestId}">Reject</button>
+          `;
+        } else {
+          actionMarkup = `
+            <button class="primary-button ripple friend-action-btn" type="button" data-send-uid="${user.uid}">Add Friend</button>
+          `;
+        }
+
+        return `
+          <div class="friend-card">
+            <div class="friend-card-user">
+              <div class="friend-card-avatar">${initial}</div>
+              <div class="friend-card-meta">
+                <strong>${escapeHtml(user.name || user.email)}</strong>
+                <small>${escapeHtml(user.email || "")}</small>
+              </div>
+            </div>
+            <div class="friend-card-actions">
+              ${actionMarkup}
+            </div>
+          </div>
+        `;
+      }).join("");
+      applyInlineIcons(searchResults);
+    } catch (err) {
+      searchResults.innerHTML = `
+        <div class="friends-empty-state">
+          <h3>Error</h3>
+          <p>${escapeHtml(err.message || "Failed to search for user.")}</p>
+        </div>
+      `;
+    }
+  }
+
+  searchBtn?.addEventListener("click", performSearch);
+  searchInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      performSearch();
+    }
+  });
+
+  // --- Requests ---
+  async function loadRequests() {
+    if (!window.emoraFriends?.getReceivedFriendRequests) return;
+    try {
+      const [received, sent] = await Promise.all([
+        window.emoraFriends.getReceivedFriendRequests(),
+        window.emoraFriends.getSentFriendRequests()
+      ]);
+
+      if (badge) {
+        badge.textContent = received.length;
+        badge.hidden = received.length === 0;
+      }
+
+      // Render Received
+      if (receivedList) {
+        if (received.length === 0) {
+          receivedList.innerHTML = `
+            <div class="friends-empty-state">
+              <div class="friends-empty-icon"><span class="icon-chip teal" data-inline-icon="bell"></span></div>
+              <h3>No requests yet</h3>
+              <p>Pending friend requests will appear here.</p>
+            </div>
+          `;
+        } else {
+          receivedList.innerHTML = received.map((req) => {
+            const initial = escapeHtml((req.senderName || req.senderEmail || "M").charAt(0).toUpperCase());
+            return `
+              <div class="friend-card">
+                <div class="friend-card-user">
+                  <div class="friend-card-avatar">${initial}</div>
+                  <div class="friend-card-meta">
+                    <strong>${escapeHtml(req.senderName || req.senderEmail)}</strong>
+                    <small>${escapeHtml(req.senderEmail || "Emora user")} sent request</small>
+                  </div>
+                </div>
+                <div class="friend-card-actions">
+                  <button class="friend-action-btn accept" type="button" data-accept-id="${req.id}">Accept</button>
+                  <button class="friend-action-btn reject" type="button" data-reject-id="${req.id}">Reject</button>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      // Render Sent
+      if (sentList) {
+        if (sent.length === 0) {
+          sentList.innerHTML = `
+            <div class="friends-empty-state">
+              <div class="friends-empty-icon"><span class="icon-chip teal" data-inline-icon="send"></span></div>
+              <h3>No sent requests</h3>
+              <p>Requests you've sent will appear here.</p>
+            </div>
+          `;
+        } else {
+          sentList.innerHTML = sent.map((req) => {
+            const initial = escapeHtml((req.receiverName || req.receiverEmail || "M").charAt(0).toUpperCase());
+            return `
+              <div class="friend-card">
+                <div class="friend-card-user">
+                  <div class="friend-card-avatar">${initial}</div>
+                  <div class="friend-card-meta">
+                    <strong>${escapeHtml(req.receiverName || req.receiverEmail)}</strong>
+                    <small>${escapeHtml(req.receiverEmail || "Emora user")} • Pending</small>
+                  </div>
+                </div>
+                <div class="friend-card-actions">
+                  <button class="friend-action-btn cancel" type="button" data-cancel-id="${req.id}">Cancel</button>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      applyInlineIcons(receivedList);
+      applyInlineIcons(sentList);
+    } catch (err) {
+      console.error("Unable to load requests", err);
+    }
+  }
+
+  // --- Friends List (WhatsApp Contacts List) ---
+  async function loadFriends() {
+    if (!window.emoraFriends?.getFriendsList || !friendsList) return;
+    try {
+      const list = await window.emoraFriends.getFriendsList();
+      if (list.length === 0) {
+        friendsList.innerHTML = `
+          <div class="friends-empty-state">
+            <div class="friends-empty-icon"><span class="icon-chip purple" data-inline-icon="users"></span></div>
+            <h3>No friends yet</h3>
+            <p>Search for friends by email address to start chatting!</p>
+          </div>
+        `;
+      } else {
+        friendsList.innerHTML = list.map((item) => {
+          const friendName = item.friend.name || item.friend.displayName || item.friend.email || "Friend";
+          const initial = escapeHtml(friendName.charAt(0).toUpperCase());
+          const isActive = currentActiveConvoId === item.conversationId;
+
+          return `
+            <div class="whatsapp-chat-item ${isActive ? 'active' : ''}"
+              data-open-chat="true"
+              data-convo-id="${escapeHtml(item.conversationId)}"
+              data-friend-id="${escapeHtml(item.friend.uid)}"
+              data-friend-name="${escapeHtml(friendName)}"
+              data-friend-email="${escapeHtml(item.friend.email || '')}">
+              <div class="friend-card-avatar">${initial}</div>
+              <div class="whatsapp-chat-item-meta">
+                <div class="whatsapp-chat-item-top">
+                  <strong>${escapeHtml(friendName)}</strong>
+                  <span class="chat-tag"><span class="live-pulse-dot" style="width:6px;height:6px;"></span> Chat</span>
+                </div>
+                <div class="whatsapp-chat-item-bottom">
+                  ${escapeHtml(item.friend.email || 'Click to chat live')}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+      applyInlineIcons(friendsList);
+
+      // Auto-open first friend conversation on desktop if none selected
+      if (list.length > 0 && !currentActiveConvoId && window.innerWidth > 768) {
+        const first = list[0];
+        const fName = first.friend.name || first.friend.displayName || first.friend.email || "Friend";
+        openFriendChat(first.conversationId, first.friend.uid, fName, first.friend.email || '');
+      }
+    } catch (err) {
+      console.error("Unable to load friends list", err);
+    }
+  }
+
+  // --- WhatsApp Live Chat Functions ---
+  function openFriendChat(convoId, friendId, friendName, friendEmail) {
+    if (chatUnsubscribe) {
+      chatUnsubscribe();
+      chatUnsubscribe = null;
+    }
+    currentActiveConvoId = convoId;
+
+    // Highlight selected item in sidebar
+    friendsSection.querySelectorAll(".whatsapp-chat-item").forEach((item) => {
+      item.classList.toggle("active", item.dataset.convoId === convoId);
+    });
+
+    if (shell) shell.classList.add("mobile-chat-active");
+    if (chatPlaceholder) chatPlaceholder.hidden = true;
+    if (activeChatRoom) activeChatRoom.hidden = false;
+
+    const initial = (friendName || "M").charAt(0).toUpperCase();
+    if (chatAvatar) chatAvatar.textContent = initial;
+    if (chatRecipientName) chatRecipientName.textContent = friendName;
+    if (chatRecipientEmail) chatRecipientEmail.textContent = friendEmail || "Live now";
+
+    if (chatMessagesContainer) {
+      chatMessagesContainer.innerHTML = `
+        <div class="friends-empty-state">
+          <p>Connecting to live chat with ${escapeHtml(friendName)}...</p>
+        </div>
+      `;
+    }
+
+    if (window.emoraFriends?.subscribeLiveChatMessages) {
+      chatUnsubscribe = window.emoraFriends.subscribeLiveChatMessages(convoId, (messages) => {
+        renderChatMessages(messages);
+      }, (err) => {
+        if (chatMessagesContainer) {
+          chatMessagesContainer.innerHTML = `
+            <div class="friends-empty-state">
+              <p>Unable to load messages: ${escapeHtml(err.message || 'Permission denied')}</p>
+            </div>
+          `;
+        }
+      });
+    }
+
+    setTimeout(() => chatInput?.focus(), 150);
+  }
+
+  function closeFriendChat() {
+    if (chatUnsubscribe) {
+      chatUnsubscribe();
+      chatUnsubscribe = null;
+    }
+    currentActiveConvoId = null;
+    if (shell) shell.classList.remove("mobile-chat-active");
+    if (activeChatRoom) activeChatRoom.hidden = true;
+    if (chatPlaceholder) chatPlaceholder.hidden = false;
+
+    friendsSection.querySelectorAll(".whatsapp-chat-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+  }
+
+  chatBackBtn?.addEventListener("click", closeFriendChat);
+
+  // Render WhatsApp-style message bubbles in light theme
+  function renderChatMessages(messages) {
+    if (!chatMessagesContainer) return;
+    const currentUser = window.emoraAuth?.currentUser;
+    const myUid = currentUser?.uid;
+
+    if (!messages || messages.length === 0) {
+      chatMessagesContainer.innerHTML = `
+        <div class="whatsapp-date-divider">Today</div>
+        <div class="friends-empty-state">
+          <div class="friends-empty-icon"><span class="icon-chip purple" data-inline-icon="messages-square"></span></div>
+          <h3>No messages yet</h3>
+          <p>Send a message below to start chatting live!</p>
+        </div>
+      `;
+      applyInlineIcons(chatMessagesContainer);
+      return;
+    }
+
+    let markup = '<div class="whatsapp-date-divider">Today</div>';
+    markup += messages.map((msg) => {
+      const isMe = msg.senderId === myUid;
+      let timeStr = "";
+      if (msg.createdAt?.toDate) {
+        timeStr = msg.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else if (msg.timestamp) {
+        timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else {
+        timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      return `
+        <div class="wa-bubble-wrapper ${isMe ? 'sent' : 'received'}">
+          <div class="wa-bubble">
+            <span class="wa-msg-text">${escapeHtml(msg.text)}</span>
+            <span class="wa-msg-meta">
+              <span>${escapeHtml(timeStr)}</span>
+              ${isMe ? '<span class="wa-check-icon" title="Delivered">✓✓</span>' : ''}
+            </span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    chatMessagesContainer.innerHTML = markup;
+    applyInlineIcons(chatMessagesContainer);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+  }
+
+  // Chat message submission
+  chatForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!chatInput) return;
+    const text = chatInput.value.trim();
+    if (!text || !currentActiveConvoId) return;
+
+    chatInput.value = "";
+    if (chatSendBtn) chatSendBtn.disabled = true;
+
+    try {
+      if (!window.emoraFriends?.sendLiveChatMessage) {
+        throw new Error("Chat service is not ready. Please refresh.");
+      }
+      await window.emoraFriends.sendLiveChatMessage(currentActiveConvoId, text);
+    } catch (err) {
+      alert(err.message || "Could not send message.");
+    } finally {
+      if (chatSendBtn) chatSendBtn.disabled = false;
+      chatInput.focus();
+    }
+  });
+
+  // Quick Emoji picker
+  if (emojiBtn && chatInput) {
+    const emojis = ["🙂", "✨", "💜", "🌿", "🙌", "🔥", "🤝", "😊"];
+    let emojiIdx = 0;
+    emojiBtn.addEventListener("click", () => {
+      chatInput.value += emojis[emojiIdx % emojis.length];
+      emojiIdx++;
+      chatInput.focus();
+    });
+  }
+
+  // --- Click Delegations ---
+  friendsSection.addEventListener("click", async (e) => {
+    // Open Live Chat (click anywhere on a friend item in the sidebar)
+    const chatBtn = e.target.closest("[data-open-chat]");
+    if (chatBtn) {
+      const convoId = chatBtn.dataset.convoId;
+      const friendId = chatBtn.dataset.friendId;
+      const friendName = chatBtn.dataset.friendName;
+      const friendEmail = chatBtn.dataset.friendEmail;
+      openFriendChat(convoId, friendId, friendName, friendEmail);
+      return;
+    }
+
+    // Send Request
+    const sendBtn = e.target.closest("[data-send-uid]");
+    if (sendBtn) {
+      const uid = sendBtn.dataset.sendUid;
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending...";
+      try {
+        await window.emoraFriends.sendFriendRequest(uid);
+        sendBtn.parentElement.innerHTML = '<span class="friend-status-pill pending">Request Sent</span>';
+        updateBadgeCount();
+      } catch (err) {
+        alert(err.message || "Failed to send friend request.");
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Add Friend";
+      }
+      return;
+    }
+
+    // Accept Request
+    const acceptBtn = e.target.closest("[data-accept-id]");
+    if (acceptBtn) {
+      const id = acceptBtn.dataset.acceptId;
+      acceptBtn.disabled = true;
+      acceptBtn.textContent = "Accepting...";
+      try {
+        await window.emoraFriends.acceptFriendRequest(id);
+        await Promise.all([loadRequests(), loadFriends()]);
+        if (lastSearchQuery) performSearch();
+      } catch (err) {
+        alert(err.message || "Failed to accept friend request.");
+        acceptBtn.disabled = false;
+        acceptBtn.textContent = "Accept";
+      }
+      return;
+    }
+
+    // Reject Request
+    const rejectBtn = e.target.closest("[data-reject-id]");
+    if (rejectBtn) {
+      const id = rejectBtn.dataset.rejectId;
+      rejectBtn.disabled = true;
+      rejectBtn.textContent = "Rejecting...";
+      try {
+        await window.emoraFriends.rejectFriendRequest(id);
+        await loadRequests();
+        if (lastSearchQuery) performSearch();
+      } catch (err) {
+        alert(err.message || "Failed to reject friend request.");
+        rejectBtn.disabled = false;
+        rejectBtn.textContent = "Reject";
+      }
+      return;
+    }
+
+    // Cancel Request
+    const cancelBtn = e.target.closest("[data-cancel-id]");
+    if (cancelBtn) {
+      const id = cancelBtn.dataset.cancelId;
+      cancelBtn.disabled = true;
+      cancelBtn.textContent = "Canceling...";
+      try {
+        await window.emoraFriends.cancelFriendRequest(id);
+        await loadRequests();
+        if (lastSearchQuery) performSearch();
+      } catch (err) {
+        alert(err.message || "Failed to cancel friend request.");
+        cancelBtn.disabled = false;
+        cancelBtn.textContent = "Cancel";
+      }
+      return;
+    }
+  });
+
+  // Comprehensive Refresh & State Sync
+  function refreshFriendsState() {
+    updateBadgeCount();
+    updateSidebarUser();
+    const activeTab = friendsSection.querySelector(".whatsapp-tab.active")?.dataset.friendsTab;
+    if (activeTab === "requests") {
+      loadRequests();
+    } else {
+      loadFriends();
+    }
+  }
+
+  window.addEventListener("emora:user-data", refreshFriendsState);
+  setTimeout(refreshFriendsState, 200);
+
+  // Watch view changes
+  const origSetView = window.emoraSetView;
+  if (typeof origSetView === "function") {
+    window.emoraSetView = function(viewName, opts) {
+      origSetView(viewName, opts);
+      if (viewName === "friends") {
+        refreshFriendsState();
+      } else {
+        closeFriendChat();
+      }
+    };
+  }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initFriendsSection);
+} else {
+  initFriendsSection();
 }

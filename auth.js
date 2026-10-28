@@ -1,6 +1,6 @@
 import { auth, db, isFirebaseConfigured } from "./firebase.js";
 import { browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import { collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const authScreen = document.querySelector("#authScreen");
 const authStatus = document.querySelector("#authStatus");
@@ -270,6 +270,307 @@ async function saveDoctorRating(doctorId, rating) {
   }, { merge: true });
 }
 
+function requireUser() {
+  if (!auth?.currentUser) throw new Error("You must be logged in to perform this action.");
+  return auth.currentUser;
+}
+
+async function searchUsersByEmail(searchQuery) {
+  const user = requireUser();
+  const raw = String(searchQuery || "").trim();
+  const trimmedLower = raw.toLowerCase();
+  if (!trimmedLower) return [];
+
+  // Primary search by email
+  const qEmail = query(collection(db, "users"), where("email", "==", trimmedLower));
+  let snap = await getDocs(qEmail);
+
+  // If no email match and no '@', also check username or original case as fallback
+  if (snap.empty) {
+    const qEmailExact = query(collection(db, "users"), where("email", "==", raw));
+    snap = await getDocs(qEmailExact);
+  }
+  if (snap.empty && !raw.includes("@")) {
+    const qUser = query(collection(db, "users"), where("username", "==", raw));
+    snap = await getDocs(qUser);
+  }
+
+  const results = [];
+  for (const userDoc of snap.docs) {
+    if (userDoc.id === user.uid) continue;
+
+    const data = userDoc.data();
+    const otherUid = userDoc.id;
+
+    const q1 = query(collection(db, "friendships"), where("user1", "==", user.uid), where("user2", "==", otherUid));
+    const q2 = query(collection(db, "friendships"), where("user1", "==", otherUid), where("user2", "==", user.uid));
+    const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+    const isFriend = !s1.empty || !s2.empty;
+
+    let relationship = "none";
+    let pendingRequestId = null;
+
+    if (isFriend) {
+      relationship = "friends";
+    } else {
+      const sentQuery = query(collection(db, "friendRequests"), where("senderId", "==", user.uid), where("receiverId", "==", otherUid), where("status", "==", "pending"));
+      const receivedQuery = query(collection(db, "friendRequests"), where("senderId", "==", otherUid), where("receiverId", "==", user.uid), where("status", "==", "pending"));
+      const [sentSnap, receivedSnap] = await Promise.all([getDocs(sentQuery), getDocs(receivedQuery)]);
+
+      if (!sentSnap.empty) {
+        relationship = "pending_sent";
+        pendingRequestId = sentSnap.docs[0].id;
+      } else if (!receivedSnap.empty) {
+        relationship = "pending_received";
+        pendingRequestId = receivedSnap.docs[0].id;
+      }
+    }
+
+    results.push({
+      uid: otherUid,
+      name: data.name || data.displayName || data.username || "Member",
+      email: data.email || "",
+      username: data.username || "",
+      relationship,
+      pendingRequestId
+    });
+  }
+  return results;
+}
+
+const searchUsersByUsername = searchUsersByEmail;
+
+async function sendFriendRequest(receiverId) {
+  const user = requireUser();
+  if (receiverId === user.uid) throw new Error("You cannot send a friend request to yourself.");
+
+  const targetSnap = await getDoc(doc(db, "users", receiverId));
+  if (!targetSnap.exists()) throw new Error("User not found.");
+  const targetData = targetSnap.data();
+
+  const q1 = query(collection(db, "friendships"), where("user1", "==", user.uid), where("user2", "==", receiverId));
+  const q2 = query(collection(db, "friendships"), where("user1", "==", receiverId), where("user2", "==", user.uid));
+  const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+  if (!s1.empty || !s2.empty) throw new Error("You are already friends with this user.");
+
+  const sentQ = query(collection(db, "friendRequests"), where("senderId", "==", user.uid), where("receiverId", "==", receiverId), where("status", "==", "pending"));
+  const recvQ = query(collection(db, "friendRequests"), where("senderId", "==", receiverId), where("receiverId", "==", user.uid), where("status", "==", "pending"));
+  const [sentSnap, recvSnap] = await Promise.all([getDocs(sentQ), getDocs(recvQ)]);
+  if (!sentSnap.empty || !recvSnap.empty) throw new Error("A friend request is already pending.");
+
+  const mySnap = await getDoc(doc(db, "users", user.uid));
+  const myData = mySnap.exists() ? mySnap.data() : {};
+
+  const requestDoc = await addDoc(collection(db, "friendRequests"), {
+    senderId: user.uid,
+    receiverId: receiverId,
+    senderName: myData.name || myData.displayName || user.displayName || "Member",
+    senderEmail: user.email || myData.email || "",
+    senderUsername: myData.username || "",
+    receiverName: targetData.name || targetData.displayName || "Member",
+    receiverEmail: targetData.email || "",
+    receiverUsername: targetData.username || "",
+    status: "pending",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+
+  return { id: requestDoc.id };
+}
+
+async function getReceivedFriendRequests() {
+  const user = requireUser();
+  const q = query(collection(db, "friendRequests"), where("receiverId", "==", user.uid), where("status", "==", "pending"));
+  const snap = await getDocs(q);
+  const list = snap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+  list.sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return timeB - timeA;
+  });
+  return list;
+}
+
+async function getSentFriendRequests() {
+  const user = requireUser();
+  const q = query(collection(db, "friendRequests"), where("senderId", "==", user.uid), where("status", "==", "pending"));
+  const snap = await getDocs(q);
+  const list = snap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+  list.sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return timeB - timeA;
+  });
+  return list;
+}
+
+async function acceptFriendRequest(requestId) {
+  const user = requireUser();
+  const reqRef = doc(db, "friendRequests", requestId);
+  const reqSnap = await getDoc(reqRef);
+  if (!reqSnap.exists()) throw new Error("Friend request does not exist.");
+  const data = reqSnap.data();
+  if (data.receiverId !== user.uid) throw new Error("Unauthorized to accept this friend request.");
+  if (data.status !== "pending") throw new Error("This request is no longer pending.");
+
+  await updateDoc(reqRef, {
+    status: "accepted",
+    updatedAt: serverTimestamp()
+  });
+
+  const users = [user.uid, data.senderId].sort();
+  const friendshipId = users.join("_");
+  const conversationId = users.join("_");
+
+  await setDoc(doc(db, "friendships", friendshipId), {
+    users,
+    user1: users[0],
+    user2: users[1],
+    conversationId,
+    createdAt: serverTimestamp()
+  }, { merge: true });
+
+  return { friendshipId, conversationId };
+}
+
+async function rejectFriendRequest(requestId) {
+  const user = requireUser();
+  const reqRef = doc(db, "friendRequests", requestId);
+  const reqSnap = await getDoc(reqRef);
+  if (!reqSnap.exists()) throw new Error("Friend request does not exist.");
+  const data = reqSnap.data();
+  if (data.receiverId !== user.uid) throw new Error("Unauthorized to reject this friend request.");
+
+  await updateDoc(reqRef, {
+    status: "rejected",
+    updatedAt: serverTimestamp()
+  });
+  return true;
+}
+
+async function cancelFriendRequest(requestId) {
+  const user = requireUser();
+  const reqRef = doc(db, "friendRequests", requestId);
+  const reqSnap = await getDoc(reqRef);
+  if (!reqSnap.exists()) return true;
+  const data = reqSnap.data();
+  if (data.senderId !== user.uid) throw new Error("Unauthorized to cancel this friend request.");
+
+  await deleteDoc(reqRef);
+  return true;
+}
+
+async function getFriendsList() {
+  const user = requireUser();
+  const q1 = query(collection(db, "friendships"), where("user1", "==", user.uid));
+  const q2 = query(collection(db, "friendships"), where("user2", "==", user.uid));
+  const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+
+  const friendsMap = new Map();
+  const allDocs = [...s1.docs, ...s2.docs];
+
+  for (const docSnap of allDocs) {
+    if (friendsMap.has(docSnap.id)) continue;
+    const fData = docSnap.data();
+    const otherUid = fData.user1 === user.uid ? fData.user2 : fData.user1;
+    friendsMap.set(docSnap.id, {
+      friendshipId: docSnap.id,
+      conversationId: fData.conversationId || docSnap.id,
+      createdAt: fData.createdAt,
+      otherUid
+    });
+  }
+
+  const list = [];
+  for (const item of friendsMap.values()) {
+    try {
+      const uSnap = await getDoc(doc(db, "users", item.otherUid));
+      const uData = uSnap.exists() ? uSnap.data() : {};
+      list.push({
+        friendshipId: item.friendshipId,
+        conversationId: item.conversationId,
+        createdAt: item.createdAt,
+        friend: {
+          uid: item.otherUid,
+          name: uData.name || uData.displayName || uData.username || "Member",
+          email: uData.email || "",
+          username: uData.username || ""
+        }
+      });
+    } catch (_err) {
+      list.push({
+        friendshipId: item.friendshipId,
+        conversationId: item.conversationId,
+        createdAt: item.createdAt,
+        friend: {
+          uid: item.otherUid,
+          name: "Member",
+          username: ""
+        }
+      });
+    }
+  }
+
+  return list;
+}
+
+async function sendLiveChatMessage(conversationId, text) {
+  const user = requireUser();
+  const cleanText = String(text || "").trim();
+  if (!cleanText) throw new Error("Message cannot be empty.");
+  if (!conversationId) throw new Error("Invalid conversation.");
+
+  const mySnap = await getDoc(doc(db, "users", user.uid));
+  const myData = mySnap.exists() ? mySnap.data() : {};
+  const senderName = myData.name || myData.displayName || user.displayName || "Member";
+
+  const msgRef = await addDoc(collection(db, "conversations", conversationId, "messages"), {
+    senderId: user.uid,
+    senderName,
+    senderEmail: user.email || myData.email || "",
+    text: cleanText,
+    createdAt: serverTimestamp(),
+    timestamp: Date.now()
+  });
+
+  return { id: msgRef.id };
+}
+
+function subscribeLiveChatMessages(conversationId, onUpdate, onError) {
+  if (!conversationId) return () => {};
+  const q = query(
+    collection(db, "conversations", conversationId, "messages"),
+    orderBy("createdAt", "asc")
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const messages = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    }));
+    onUpdate(messages);
+  }, (err) => {
+    console.error("Live chat snapshot error:", err);
+    if (typeof onError === "function") onError(err);
+  });
+}
+
+const friendsApi = {
+  searchUsersByEmail,
+  searchUsersByUsername,
+  sendFriendRequest,
+  getReceivedFriendRequests,
+  getSentFriendRequests,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  cancelFriendRequest,
+  getFriendsList,
+  sendLiveChatMessage,
+  subscribeLiveChatMessages
+};
+
+window.emoraFriends = friendsApi;
+
 window.emoraAuth = {
   signOut: async () => {
     clearLocalWellnessData();
@@ -280,5 +581,9 @@ window.emoraAuth = {
   },
   saveUserData: (data) => auth?.currentUser ? saveUserData(auth.currentUser, data) : Promise.resolve(),
   getNearbyDoctors,
-  saveDoctorRating
+  saveDoctorRating,
+  get currentUser() { return auth?.currentUser || null; },
+  db,
+  auth,
+  ...friendsApi
 };
