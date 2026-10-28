@@ -130,6 +130,19 @@ async function showApp(user) {
   const userData = await loadUserData(user);
   updateUserUi(user, userData);
   await updateUserStreak(user, userData);
+  try {
+    const cleanEmail = (user.email || "").trim().toLowerCase();
+    const cleanName = user.displayName || userData.name || userData.displayName || (cleanEmail ? cleanEmail.split("@")[0] : "Member");
+    if (cleanEmail) {
+      await saveUserData(user, {
+        email: cleanEmail,
+        name: cleanName,
+        username: userData.username || cleanEmail.split("@")[0]
+      });
+    }
+  } catch (syncErr) {
+    console.warn("Unable to sync email to Firestore:", syncErr);
+  }
   setAuthHistory(true);
   window.emoraSetView?.("dashboard", { history: "replace" });
 }
@@ -281,22 +294,69 @@ async function searchUsersByEmail(searchQuery) {
   const trimmedLower = raw.toLowerCase();
   if (!trimmedLower) return [];
 
-  // Primary search by email
-  const qEmail = query(collection(db, "users"), where("email", "==", trimmedLower));
-  let snap = await getDocs(qEmail);
+  const foundDocsMap = new Map();
 
-  // If no email match and no '@', also check username or original case as fallback
-  if (snap.empty) {
-    const qEmailExact = query(collection(db, "users"), where("email", "==", raw));
-    snap = await getDocs(qEmailExact);
+  // 1. Direct query: lowercase email
+  try {
+    const qEmail = query(collection(db, "users"), where("email", "==", trimmedLower));
+    const snap = await getDocs(qEmail);
+    snap.docs.forEach((docSnap) => foundDocsMap.set(docSnap.id, docSnap));
+  } catch (err) {
+    console.warn("Direct email query error:", err);
   }
-  if (snap.empty && !raw.includes("@")) {
-    const qUser = query(collection(db, "users"), where("username", "==", raw));
-    snap = await getDocs(qUser);
+
+  // 2. Direct query: raw email
+  if (foundDocsMap.size === 0 && raw !== trimmedLower) {
+    try {
+      const qEmailExact = query(collection(db, "users"), where("email", "==", raw));
+      const snapExact = await getDocs(qEmailExact);
+      snapExact.docs.forEach((docSnap) => foundDocsMap.set(docSnap.id, docSnap));
+    } catch (_e) {}
+  }
+
+  // 3. Direct query: username
+  if (foundDocsMap.size === 0) {
+    try {
+      const qUser = query(collection(db, "users"), where("username", "==", raw));
+      const snapUser = await getDocs(qUser);
+      snapUser.docs.forEach((docSnap) => foundDocsMap.set(docSnap.id, docSnap));
+    } catch (_e) {}
+  }
+
+  // 4. Robust fallback collection scan: catches any user regardless of case,
+  // leading/trailing whitespace, or whether email was stored in profile/email fields!
+  if (foundDocsMap.size === 0) {
+    try {
+      const allUsersSnap = await getDocs(collection(db, "users"));
+      for (const docSnap of allUsersSnap.docs) {
+        if (docSnap.id === user.uid) continue;
+        const d = docSnap.data() || {};
+        const dEmail = String(d.email || d.userEmail || d.profile?.email || "").toLowerCase().trim();
+        const dUsername = String(d.username || "").toLowerCase().trim();
+        const dName = String(d.name || d.displayName || "").toLowerCase().trim();
+
+        const matchEmail = Boolean(dEmail && (
+          dEmail === trimmedLower ||
+          dEmail.startsWith(trimmedLower) ||
+          trimmedLower.startsWith(dEmail) ||
+          (trimmedLower.includes("@") && dEmail.includes(trimmedLower)) ||
+          (!trimmedLower.includes("@") && dEmail.split("@")[0] === trimmedLower)
+        ));
+
+        const matchUser = Boolean(dUsername && (dUsername === trimmedLower || dUsername === raw.toLowerCase()));
+        const matchName = Boolean(dName && (dName === trimmedLower || (trimmedLower.length >= 3 && dName.includes(trimmedLower))));
+
+        if (matchEmail || matchUser || matchName) {
+          foundDocsMap.set(docSnap.id, docSnap);
+        }
+      }
+    } catch (scanErr) {
+      console.warn("User fallback scan error:", scanErr);
+    }
   }
 
   const results = [];
-  for (const userDoc of snap.docs) {
+  for (const userDoc of foundDocsMap.values()) {
     if (userDoc.id === user.uid) continue;
 
     const data = userDoc.data();
@@ -328,8 +388,8 @@ async function searchUsersByEmail(searchQuery) {
 
     results.push({
       uid: otherUid,
-      name: data.name || data.displayName || data.username || "Member",
-      email: data.email || "",
+      name: data.name || data.displayName || data.username || (data.email ? String(data.email).split("@")[0] : "Member"),
+      email: data.email || data.userEmail || data.profile?.email || "",
       username: data.username || "",
       relationship,
       pendingRequestId

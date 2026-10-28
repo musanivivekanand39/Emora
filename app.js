@@ -44,9 +44,14 @@ document.querySelectorAll("[data-icon-button]").forEach((item) => {
   item.innerHTML = svg(item.dataset.iconButton);
 });
 
-document.querySelectorAll("[data-inline-icon]").forEach((item) => {
-  item.innerHTML = svg(item.dataset.inlineIcon);
-});
+function applyInlineIcons(container = document) {
+  if (!container) return;
+  container.querySelectorAll("[data-inline-icon]").forEach((item) => {
+    if (typeof svg === "function") item.innerHTML = svg(item.dataset.inlineIcon);
+  });
+}
+window.applyInlineIcons = applyInlineIcons;
+applyInlineIcons();
 
 const currentDate = document.querySelector("#currentDate");
 if (currentDate) {

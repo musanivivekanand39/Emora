@@ -147,7 +147,7 @@
     </div>
 
 
-    <script type="module" src="auth.js"></script>
+    <script type="module" src="auth.js?v=3"></script>
     <script>
       const sectionFiles = ["dashboard", "chat", "check", "relax", "friends", "emergency", "analytics", "settings"];
       Promise.all(sectionFiles.map((name) => fetch(`sections/${name}.html?v=` + Date.now()).then((response) => {
