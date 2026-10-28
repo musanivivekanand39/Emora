@@ -7745,8 +7745,15 @@ select:-webkit-autofill {
   padding: 10px !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 8px !important;
   background: #f8fbff !important;
+}
+
+[hidden],
+.whatsapp-panel[hidden],
+.whatsapp-chat-list[hidden],
+[data-requests-panel][hidden] {
+  display: none !important;
 }
 
 /* Contacts in list */
@@ -7890,58 +7897,89 @@ select:-webkit-autofill {
 /* Friend Requests & Search cards */
 .whatsapp-sidebar .friend-card {
   display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
+  flex-direction: column !important;
+  gap: 10px !important;
   padding: 12px 14px !important;
   border-radius: 14px !important;
-  gap: 10px !important;
   border: 1px solid #e1ebf7 !important;
   background: #ffffff !important;
   box-shadow: 0 2px 6px rgba(40, 86, 150, 0.03) !important;
+  transition: all 180ms ease !important;
+}
+
+.whatsapp-sidebar .friend-card:hover {
+  border-color: #bad3ff !important;
+  box-shadow: 0 4px 12px rgba(18, 104, 239, 0.08) !important;
 }
 
 .whatsapp-sidebar .friend-card-user {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 12px !important;
   min-width: 0 !important;
+  width: 100% !important;
+}
+
+.whatsapp-sidebar .friend-card-meta {
   flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
 }
 
 .whatsapp-sidebar .friend-card-meta strong {
-  font-size: 0.86rem !important;
+  font-size: 0.9rem !important;
   color: #071a57 !important;
   font-weight: 700 !important;
   display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.25 !important;
 }
 
 .whatsapp-sidebar .friend-card-meta small {
-  font-size: 0.75rem !important;
+  font-size: 0.76rem !important;
   color: #62779f !important;
   display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin-top: 2px !important;
 }
 
 .whatsapp-sidebar .friend-card-actions {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  flex-shrink: 0 !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding-top: 8px !important;
+  border-top: 1px solid #f0f5fc !important;
 }
 
 .whatsapp-sidebar .friend-action-btn {
-  padding: 6px 14px !important;
-  font-size: 0.76rem !important;
+  padding: 7px 18px !important;
+  font-size: 0.8rem !important;
   font-weight: 700 !important;
   border-radius: 999px !important;
   cursor: pointer !important;
   border: none !important;
   font-family: inherit !important;
   transition: all 180ms ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .whatsapp-sidebar .friend-action-btn.accept {
   background: #1268ef !important;
   color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(18, 104, 239, 0.25) !important;
+}
+
+.whatsapp-sidebar .friend-action-btn.accept:hover {
+  background: #0f5ed9 !important;
+  transform: translateY(-1px) !important;
 }
 
 .whatsapp-sidebar .friend-action-btn.reject,
@@ -7949,6 +7987,11 @@ select:-webkit-autofill {
   background: #fee2e2 !important;
   color: #dc2626 !important;
   border: 1px solid #fecaca !important;
+}
+
+.whatsapp-sidebar .friend-action-btn.reject:hover,
+.whatsapp-sidebar .friend-action-btn.cancel:hover {
+  background: #fecaca !important;
 }
 
 .whatsapp-sidebar .friend-status-pill {

@@ -1373,6 +1373,8 @@ function initFriendsSection() {
     tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.friendsTab === tabName));
     panels.forEach((panel) => panel.classList.toggle("active", panel.dataset.friendsPanel === tabName));
     if (tabName === "requests") {
+      const currentSubTab = friendsSection.querySelector(".friends-sub-tab.active")?.dataset.requestsTab || "received";
+      switchSubTab(currentSubTab);
       loadRequests();
     } else if (tabName === "list") {
       loadFriends();
@@ -1388,12 +1390,16 @@ function initFriendsSection() {
     subPanels.forEach((panel) => {
       const isTarget = panel.dataset.requestsPanel === subTabName;
       panel.hidden = !isTarget;
+      panel.style.display = isTarget ? "flex" : "none";
     });
   }
 
   subTabs.forEach((tab) => {
     tab.addEventListener("click", () => switchSubTab(tab.dataset.requestsTab));
   });
+
+  // Ensure default sub-tab display is synchronized
+  switchSubTab("received");
 
   async function updateBadgeCount() {
     if (!window.emoraFriends?.getReceivedFriendRequests) return;
@@ -1525,6 +1531,7 @@ function initFriendsSection() {
               <p>Pending friend requests will appear here.</p>
             </div>
           `;
+          applyInlineIcons(receivedList);
         } else {
           receivedList.innerHTML = received.map((req) => {
             const initial = escapeHtml((req.senderName || req.senderEmail || "M").charAt(0).toUpperCase());
@@ -1533,8 +1540,8 @@ function initFriendsSection() {
                 <div class="friend-card-user">
                   <div class="friend-card-avatar">${initial}</div>
                   <div class="friend-card-meta">
-                    <strong>${escapeHtml(req.senderName || req.senderEmail)}</strong>
-                    <small>${escapeHtml(req.senderEmail || "Emora user")} sent request</small>
+                    <strong title="${escapeHtml(req.senderName || req.senderEmail)}">${escapeHtml(req.senderName || req.senderEmail)}</strong>
+                    <small title="${escapeHtml(req.senderEmail || '')}">${escapeHtml(req.senderEmail || "Emora user")}</small>
                   </div>
                 </div>
                 <div class="friend-card-actions">
@@ -1557,6 +1564,7 @@ function initFriendsSection() {
               <p>Requests you've sent will appear here.</p>
             </div>
           `;
+          applyInlineIcons(sentList);
         } else {
           sentList.innerHTML = sent.map((req) => {
             const initial = escapeHtml((req.receiverName || req.receiverEmail || "M").charAt(0).toUpperCase());
@@ -1565,8 +1573,8 @@ function initFriendsSection() {
                 <div class="friend-card-user">
                   <div class="friend-card-avatar">${initial}</div>
                   <div class="friend-card-meta">
-                    <strong>${escapeHtml(req.receiverName || req.receiverEmail)}</strong>
-                    <small>${escapeHtml(req.receiverEmail || "Emora user")} • Pending</small>
+                    <strong title="${escapeHtml(req.receiverName || req.receiverEmail)}">${escapeHtml(req.receiverName || req.receiverEmail)}</strong>
+                    <small title="${escapeHtml(req.receiverEmail || '')}">${escapeHtml(req.receiverEmail || "Emora user")}</small>
                   </div>
                 </div>
                 <div class="friend-card-actions">
