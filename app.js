@@ -180,18 +180,18 @@ const screeningData = {
   phq9: {
     title: "PHQ-9",
     subtitle: "Depression screening",
-    context: "Over the last 2 weeks, how often have you been bothered by...",
+    context: "Over the last 2 weeks, how often have you experienced the following?",
     maxScore: 27,
     questions: [
-      { id: "phq-interest", text: "Little interest or pleasure in doing things" },
-      { id: "phq-low", text: "Feeling down, depressed, or hopeless" },
-      { id: "phq-sleep", text: "Trouble falling or staying asleep, or sleeping too much" },
-      { id: "phq-energy", text: "Feeling tired or having little energy" },
-      { id: "phq-appetite", text: "Poor appetite or overeating" },
-      { id: "phq-worth", text: "Feeling bad about yourself, or that you are a failure or have let yourself or your family down" },
-      { id: "phq-focus", text: "Trouble concentrating on things, such as reading or watching something" },
-      { id: "phq-pace", text: "Moving or speaking so slowly that others could notice, or being so fidgety or restless that you moved around more than usual" },
-      { id: "phq-harm", text: "Thoughts that you would be better off dead, or of hurting yourself in some way" }
+      { id: "phq-interest", text: "Have you lost interest or enjoyment in activities you usually like?" },
+      { id: "phq-low", text: "Have you been feeling sad, low, or hopeless?" },
+      { id: "phq-sleep", text: "Have you had trouble falling asleep, staying asleep, or sleeping too much?" },
+      { id: "phq-energy", text: "Have you been feeling tired or lacking energy?" },
+      { id: "phq-appetite", text: "Have you noticed changes in your appetite, such as eating too little or too much?" },
+      { id: "phq-worth", text: "Have you been feeling bad about yourself or doubting your own worth?" },
+      { id: "phq-focus", text: "Have you had difficulty concentrating on everyday activities?" },
+      { id: "phq-pace", text: "Have you felt unusually restless or found yourself moving or speaking more slowly than usual?" },
+      { id: "phq-harm", text: "Have you had thoughts of harming yourself or feeling that you would be better off not being alive?" }
     ],
     ranges: [
       { max: 4, label: "Minimal range" },
